@@ -170,3 +170,9 @@ input[type="radio"], input[type="checkbox"] {
     display: none !important;
   }
 }
+
+
+      .leaflet-top-pane{
+       pointer-events: none; 
+        
+      }
