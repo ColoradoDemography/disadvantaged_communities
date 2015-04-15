@@ -8,12 +8,15 @@ header('Content-disposition: attachment; filename=geoFile.geojson');
     header("Pragma: no-cache"); // HTTP 1.0
     header("Expires: 0"); // Proxies
 
-require 'connect.php';
 //file with connection information
 //setup like:
 //$server="server";
 //$user="username";
 //$password="password";
+
+set_include_path(__DIR__);
+require '../../../CensusAPI/connect.php';
+
 
 
 //parameters: lgid (optional):FUTURE, limit (optional), zoom (optional), bb (optional)
