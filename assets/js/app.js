@@ -1,4 +1,11 @@
-var map;
+var map, globalbusy, geojsonLayer, lastzoom;
+
+//map bounds the last time the data was loaded
+var coord={};
+coord.nelat='';
+coord.nelng='';
+coord.swlat='';
+coord.swlng='';
 
 $(window).resize(function() {
   sizeLayerControl();
@@ -22,7 +29,75 @@ function sizeLayerControl() {
   $(".leaflet-control-layers").css("max-height", $("#map").height() - 50);
 }
 
+    function ajaxcall() {
+         
+      
+      var r, diff1, diff2, newbounds;     
 
+        geojsonLayer.clearLayers();
+
+        lastzoom = map.getZoom();
+        r = map.getBounds();
+        coord.nelat = (r._northEast.lat);
+        coord.nelng = (r._northEast.lng);
+        coord.swlat = (r._southWest.lat);
+        coord.swlng = (r._southWest.lng);
+
+        diff1 = (coord.nelat - coord.swlat) / 2;
+        diff2 = (coord.nelng - coord.swlng) / 2;
+
+        //we calculate a bounding box equal much larger than the actual visible map.  This preloades shapes that are off the map.  Combined with the center point query, this will allow us to not have to requery the database on every map movement.
+        newbounds = (coord.swlng - diff2) + "," + (coord.swlat - diff1) + "," + (coord.nelng + diff2) + "," + (coord.nelat + diff1);
+
+        geojsonLayer.refresh("geojson.php?limit=50&bb=" + newbounds + "&zoom=" + map.getZoom() ); //add a new layer replacing whatever is there
+
+    }
+
+
+
+    //after successfull ajax call, data is sent here
+    function getJson(data) {
+
+
+        geojsonLayer.clearLayers(); //(mostly) eliminates double-draw (should be technically unneccessary if you look at the code of leaflet-ajax...but still seems to help)
+        geojsonLayer.addData(data);
+
+        geojsonLayer.setStyle(stylefunc);   //geojsonLayer.setStyle(feat1);   
+        map.addLayer(geojsonLayer);
+      
+    }
+
+function stylefunc(feature){
+      
+      var typical={
+      color: "black",
+      weight: 1,
+      fill: true,
+      opacity: 1,
+      fillOpacity: 0.4,
+        clickable: true,
+    'zIndex': 10
+      };
+            
+      //console.log(feature);
+        switch ((feature.properties.lgid).toString().slice(-1)) {
+            case '0': typical.color = "#5E5075"; return typical;
+            case '1': typical.color = "#6DAF48"; return typical;
+            case '2': typical.color = "#CD4A31"; return typical;
+            case '3': typical.color = "#B25BD2"; return typical;
+            case '4': typical.color = "#51A19E"; return typical;
+            case '5': typical.color = "#BD8A39"; return typical;
+            case '6': typical.color = "#506330"; return typical;
+            case '7': typical.color = "#C75293"; return typical;
+            case '8': typical.color = "#A95155"; return typical;
+            case '9': typical.color = "#8289CC"; return typical;
+        }
+      
+      return typical;
+      
+    
+  
+}
 
 /* Basemap Layers */
 var mapquestOSM = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
@@ -45,67 +120,25 @@ var mapquestHYB = L.layerGroup([L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/sa
 })]);
 
 
-var example = L.geoJson(null, {
-    style: function(feature) {
-      
-      var typical={
-      color: "black",
-      weight: 1,
-      fill: true,
-      opacity: 1,
-      fillOpacity: 0.4,
-        clickable: true,
-    'zIndex': 10
-    };
-            
-      //console.log(feature);
-        switch ((feature.properties.LG_ID).toString().slice(-1)) {
-            case '0': typical.color = "#5E5075"; return typical;
-            case '1': typical.color = "#6DAF48"; return typical;
-            case '2': typical.color = "#CD4A31"; return typical;
-            case '3': typical.color = "#B25BD2"; return typical;
-            case '4': typical.color = "#51A19E"; return typical;
-            case '5': typical.color = "#BD8A39"; return typical;
-            case '6': typical.color = "#506330"; return typical;
-            case '7': typical.color = "#C75293"; return typical;
-            case '8': typical.color = "#A95155"; return typical;
-            case '9': typical.color = "#8289CC"; return typical;
-        }
-      
-      return typical;
-      
-    },
-     onEachFeature: function (feature, layer) {
-           if (feature.properties) {
-      var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Division</th><td>" + feature.properties.LG_ID + "</td></tr>" + "<tr><th>Line</th><td>" + feature.properties.X + "</td></tr>" + "<table>";
-      layer.on({
-        click: function (e) {
-          $("#feature-title").html(feature.properties.FIRST_NAME);
-          $("#feature-info").html(content);
-          $("#featureModal").modal("show");
-          this.bringToBack();  //to deal with overlapping features.  click again and obscured feature is now on top
-        }
-     });
-           }
-}
-});
-$.getJSON("data/ctf.geojson", function (data) {
-  example.addData(data);
-});
 
 
-//globals
-//comment all of these
-//varlist
 L.mapbox.accessToken = 'pk.eyJ1Ijoic3RhdGVjb2RlbW9nIiwiYSI6Ikp0Sk1tSmsifQ.hl44-VjKTJNEP5pgDFcFPg';
-
 
 /* Basemap Layers */  //not ideal because of double - labels
 var mbstyle = L.mapbox.tileLayer('statecodemog.aa380654', {
     'zIndex': 1
 });
-
 var mbsat = L.mapbox.tileLayer('statecodemog.km7i3g01');
+
+
+
+map = L.map("map", {
+  zoom: 10,
+  center: [40, -104.979378],
+  layers: [mbstyle],
+  zoomControl: false,
+  attributionControl: false
+});
 
 
 
@@ -115,27 +148,14 @@ var mblabels = L.mapbox.tileLayer('statecodemog.798453f5', {
     'zIndex': 100
 });
 
-
-map = L.map("map", {
-  zoom: 10,
-  center: [40, -104.979378],
-  layers: [mbstyle, example],
-  zoomControl: false,
-  attributionControl: false
-});
-
-
-
 //create map sandwich
 var topPane = map._createPane('leaflet-top-pane', map.getPanes().mapPane);
 var topLayer = mblabels.addTo(map);
 topPane.appendChild(topLayer.getContainer());
 
 
-var baseLayers = {
-    "Mapbox: Satellite": mbsat,
-    "Mapbox: Contrast Base": mbstyle
-};
+
+
 
 
 
@@ -200,18 +220,22 @@ var locateControl = L.control.locate({
 /* Larger screens get expanded layer control and visible sidebar */
 if (document.body.clientWidth <= 767) {
   var isCollapsed = true;
-} else {
-  var isCollapsed = false;
-}
+} else {  var isCollapsed = false; }
 
 
-var groupedOverlays = {
-  "District Categories": {
-    "Example": example
-  }
+var baseLayers = {
+    "Mapbox: Satellite": mbsat,
+    "Mapbox: Contrast Base": mbstyle
 };
 
-var layerControl = L.control.groupedLayers(baseLayers, groupedOverlays, {
+
+//var groupedOverlays = {
+//  "District Categories": {
+//    "Example": example
+//  }
+//};
+
+var layerControl = L.control.groupedLayers(baseLayers, {}, {
   collapsed: isCollapsed
 }).addTo(map);
 
@@ -227,17 +251,9 @@ $("#searchbox").keypress(function (e) {
   }
 });
 
-
 // Leaflet patch to make layer control scrollable on touch browsers
 var container = $(".leaflet-control-layers")[0];
-if (!L.Browser.touch) {
-  L.DomEvent
-  .disableClickPropagation(container)
-  .disableScrollPropagation(container);
-} else {
-  L.DomEvent.disableClickPropagation(container);
-}
-
+if (!L.Browser.touch) {  L.DomEvent.disableClickPropagation(container).disableScrollPropagation(container);} else { L.DomEvent.disableClickPropagation(container);}
 $("#loading").hide();
 
 
@@ -245,23 +261,13 @@ $("#loading").hide();
 
 
 
-
-
-
-
-
-
-
-
-
+//BELOW FOR TYPEAHEAD
 
 /* Highlight search box text on click */
 $("#the-basics").click(function () {
   $(this).select();
 });
-
- 
-  
+   
 var substringMatcher = function(strs) {
   return function findMatches(q, cb) {
     var matches, substringRegex;
@@ -290,26 +296,13 @@ var substringMatcher = function(strs) {
   $(this).select();
 });
 
-$('#the-basics .typeahead').typeahead({
-  hint: true,
-  highlight: true,
-  minLength: 4
-},
-{
+$('#the-basics .typeahead').typeahead({ hint: true,  highlight: true,  minLength: 4},{
   name: 'locations',
   displayKey: 'value',
   source: substringMatcher(locations)
-}
-
-);
+});
 	
-$('#the-basics .typeahead').on('typeahead:selected', function (e, datum) {
-    //console.log(datum);
-	searchresult(datum);
-}).on('typeahead:autocompleted', function (e, datum) {
-    //console.log(datum);
-	searchresult(datum);	
-});	
+$('#the-basics .typeahead').on('typeahead:selected', function (e, datum) { searchresult(datum); }).on('typeahead:autocompleted', function (e, datum) {	searchresult(datum);});	
 	
 function searchresult(result){
 
@@ -319,3 +312,211 @@ for(i=1;i<523;i++){
 		}
 	}
 }
+
+
+function onEachFeature(feature, layer) {
+  
+       function typelookup(district){
+         
+                 switch (district) {
+            case '6': return "Metropolitan District";
+            case '7': return "Park & Recreation District";
+            case '8': return "Fire Protection District";
+            case '9': return "Health Service District (Hospital District)";
+            case '10': return "Sanitation District";
+            case '11': return "Water District";
+            case '12': return "Water & Sanitation District";
+            case '13': return "County Recreation District";
+            case '14': return "Metropolitan Sewage Disposal District";
+            case '15': return "Cemetery District";
+            case '16': return "Library District";
+            case '17': return "Ground Water Management District";
+            case '18': return "Water Conservancy District";
+            case '19': return "County Pest Control District";
+            case '20': return "Conservation District (Soil)";
+            case '21': return "Metropolitan Water District";
+            case '22': return "Irrigation District (Irrigation Drainage)";
+            case '23': return "Junior College District";
+            case '24': return "Law Enforcement Authority";
+            case '25': return "Drainage District";
+            case '26': return "Downtown Development Authority";
+            case '27': return "Urban Renewal Authority";
+            case '28': return "General Improvement District (Municipal)";
+            case '29': return "Special Improvement District (Municipal, Incl. Storm Sewer)";
+            case '30': return "Local Improvement District (County)";
+            case '31': return "Public Improvement District (County)";
+            case '32': return "County Housing Authority";
+            case '33': return "County Disposal District";
+            case '34': return "Power Authority";
+            case '35': return "Water Authority";
+            case '36': return "Moffat Tunnel Authority";
+            case '37': return "Regional Transportation District";
+            case '38': return "Colorado Travel And Tourism Authority";
+            case '39': return "Urban Drainage & Flood Control District";
+            case '40': return "Internal Improvement District (Flood Control)";
+            case '41': return "Airport Authority";
+            case '42': return "Tunnel District";
+            case '43': return "Conservancy District (Flood Control)";
+            case '44': return "Grand Valley Drainage District";
+            case '45': return "Ambulance District";                     
+            case '46': return "Housing Authority (Municipal)";
+            case '47': return "Authority (Intergovernmental Contract)";
+            case '48': return "Rail District";
+            case '49': return "Recreation Facility District";
+            case '50': return "County Water & Sanitation Facility";
+            case '51': return "Conservation District (River Water)";
+            case '52': return "Denver Metropolitan Scientific & Cultural Facilities District";
+            case '53': return "Scientific & Cultural Facilities District";
+            case '54': return "Mine Drainage District";
+            case '55': return "Public Highway Authority";
+            case '56': return "Cherry Creek Basin Water Quality Authority";
+            case '57': return "Business Improvement District";
+            case '58': return "Regional Service Authority";
+            case '59': return "Special Taxing District of Home Rule County";
+            case '60': return "Emergency Telephone Service (911 Authority)";
+
+            case '62': return "University Of Colorado Hospital Authority";
+            case '63': return "Denver Metropolitan Major League Baseball Stadium District";
+            case '64': return "Regional Transportation Authority";
+            case '65': return "Pueblo Depot Activity Development Authority";
+            case '66': return "Colorado Intermountain Fixed Guideway Authority";
+            case '67': return "Metropolitan Football Stadium District";
+            case '68': return "Denver Health And Hospital Authority";
+            case '69': return "Multijurisdictional Housing Authority";
+
+            case '71': return "Local Marketing District";
+            case '72': return "Special Taxing District of Home Rule Municipality";
+            case '73': return "Health Assurance District";
+            case '74': return "Mental Health Care Service District";
+            case '75': return "Forest Improvement District";
+            case '76': return "Fountain Creek Watershed, Flood Control, and Greenway District";
+            case '77': return "Colorado New Energy Improvement District";
+            case '78': return "Federal Mineral Lease District";
+            case '79': return "Subdistrict of Special District";
+            case '80': return "Special Improvement District (Title 32 Special District)";
+
+            case '95': return "Boards of Cooperative (Educational) Services (BOCES)";                     
+            case '96': return "Tax Increment Finance (TIF) URA/DDA Plan Areas";
+            case '97': return "Miscellaneous District";
+            case '98': return "County Purpose";
+            case '99': return "School District";
+        }
+         
+       }
+ 
+              
+       function statuslookup(district){
+         
+                 switch (district) {
+            case '1': return "Active";
+            case '2': return "Consolidated";
+            case '3': return "Dissolved";
+            case '4': return "Multi-county";
+            case '5': return "Single-county";
+            case '6': return "Pending Formation";
+            case '7': return "Pending Dissolution";
+        }
+         
+       }
+       
+           if (feature.properties) {
+             
+         var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + feature.properties.lgid + "</td></tr>" + "<tr><th>Type</th><td>" + typelookup(feature.properties.lgtypeid) + "</td></tr><tr><th>Status</th><td>" + statuslookup(feature.properties.lgstatusid) + "</td></tr>" + "<table>";
+                 var title=feature.properties.lgname;
+      layer.on({
+        click: function (e) {
+          $("#feature-title").html(title);
+          $("#feature-info").html(content);
+          $("#featureModal").modal("show");
+          this.bringToBack();  //to deal with overlapping features.  click again and obscured feature is now on top
+        }
+     });
+           }
+  
+}
+
+
+
+
+//on dom loaded
+$(document).ready(function() {
+  
+      //initialize geojsonLayer
+    geojsonLayer = L.geoJson.ajax("", {
+        middleware: function(data) {
+            getJson(data);
+        }, 
+        onEachFeature: onEachFeature
+    });
+
+
+  //keep track of time.  when stopped moving for two seconds, redraw
+      map.on('movestart', function() {
+      var d = new Date();
+      globalbusy = d.getTime(); 
+      });
+ 
+    map.on('moveend', function() {
+      var d = new Date();
+      globalbusy = d.getTime(); 
+
+      
+      setTimeout(function(){ 
+        var e, curtime, c, clat, clng;
+        
+        e=new Date();
+        curtime = e.getTime();
+              if(curtime>= (globalbusy+1000)){
+                
+        //get center of map point
+        c = map.getCenter();
+        clat = c.lat;
+        clng = c.lng;
+
+        //if center point is still within the current map bounds, then dont do anything.  otherwise, run query again
+        if (clat < coord.nelat && clat > coord.swlat && clng < coord.nelng && clng > coord.swlng) {
+          
+          if(map.getZoom()!==lastzoom){ ajaxcall(); }
+          
+        } else {
+            ajaxcall();
+        }
+                
+                
+                
+              }
+        }, 1000);
+      
+      
+    }); // end 'on moveend'
+
+    map.on('zoomstart', function() {
+      var d = new Date();
+      globalbusy = d.getTime(); 
+    });
+  
+    //when map is zoomed in or out
+    map.on('zoomend', function() {
+    var d, e, curtime, curzoom;
+
+      d = new Date();
+      globalbusy = d.getTime(); 
+      
+      setTimeout(function(){
+        e=new Date();
+        curtime = e.getTime();
+        
+              if(curtime>= (globalbusy+1000)){
+
+          if(map.getZoom()!==lastzoom){ ajaxcall(); }
+
+              }
+        }, 1000);
+      
+      
+    });  
+  
+  //kick it!
+  ajaxcall();
+  
+});

@@ -176,3 +176,9 @@ input[type="radio"], input[type="checkbox"] {
        pointer-events: none; 
         
       }
+
+
+#adjustr{
+  margin-right: 0px;
+  
+}

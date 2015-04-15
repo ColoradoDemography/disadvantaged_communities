@@ -37,7 +37,7 @@
           <a class="navbar-brand" href="#">Colorado Special Districts</a>
         </div>
         <div class="navbar-collapse collapse">
-                  <form class="navbar-form navbar-right" role="search">
+                  <form class="navbar-form navbar-right" id="adjustr" role="search">
           <div id="the-basics"  class="form-group has-feedback navbar-right">
               <input id="searchbox" type="text" placeholder="Search" class="form-control typeahead">
               <span id="searchicon" class="fa fa-search form-control-feedback"></span>
@@ -91,7 +91,7 @@
             </ul>
             <div class="tab-content" id="aboutTabsContent">
               <div class="tab-pane fade active in" id="about">
-                <p>Colorado contains thousands of governmental entities referred to as 'special districts'.  Currently there is not a single authoritative source for boundary and/or GIS information of these districts.  This project attempts to fill that void.  Please note the disclaimer.  Since many of these district boundaries trace their origin to scanned drawings or digitized PDFs we can not guarantee the accuracy of the data, and as such, these boundaries should not be seen as an authoritative source of information.  This is simple a best-effort compilation. </p>
+                <p>Colorado contains thousands of governmental entities referred to as 'special districts'.  Currently there is not a single authoritative source for boundary and/or GIS information of these districts.  This project attempts to fill that void.  Please note the disclaimer.  Since many of these district boundaries trace their origin to scanned drawings or digitized PDFs we can not guarantee the accuracy of the data, and as such, these boundaries should not be seen as an authoritative source of information.  </p>
                 <p>Limited metadata is available <a href="https://docs.google.com/spreadsheets/d/1gaOjeXlLzQankggbhtrQq3HDEPfwwiXiPeSZrP6FjOs/edit?usp=sharing" target="_blank">here</a>.</p></div>
               <div id="disclaimer" class="tab-pane fade text-danger">
                 <p>The creator (DOLA) and contributors to this project do not guarantee the accuracy of any information presented, are not liable for any errors or omissions and are not responsible for determining fitness for use, either in this map or in its associated data. This data should not be considered an authoritative source of information.</p>
@@ -135,8 +135,14 @@
           </div>
           <div class="modal-body">
             <div id="attribution">
-            <br /><p><b>Bootleaf</b> Template developed by <a href="http://bryanmcbride.com/" target="_blank">Bryan McBride</a>.  (<a href="http://bmcbride.github.io/bootleaf/" target="_blank">Bootleaf Github</a>). License: <a href="https://raw.githubusercontent.com/bmcbride/bootleaf/master/LICENSE.txt" target="_blank">MIT</a></p>
+            <p><b>Bootleaf</b> Template developed by <a href="http://bryanmcbride.com/" target="_blank">Bryan McBride</a>.  (<a href="http://bmcbride.github.io/bootleaf/" target="_blank">Bootleaf Github</a>). License: <a href="https://raw.githubusercontent.com/bmcbride/bootleaf/master/LICENSE.txt" target="_blank">MIT</a></p>
             <p><b>Leaflet</b> created by <a href="http://agafonkin.com/en" target="_blank">Vladimir Agafonkin</a>.  (<a href="https://github.com/Leaflet/Leaflet/" target="_blank">Leaflet Github</a>). <a href="https://raw.githubusercontent.com/Leaflet/Leaflet/master/LICENSE" target="_blank">License</a></p>
+              <p><b>JQuery</b> created by <a href="https://jquery.org/" target="_blank">jQuery Foundation</a>.  (<a href="https://github.com/jquery/jquery" target="_blank">JQuery Github</a>). <a href="https://github.com/jquery/jquery/blob/master/LICENSE.txt" target="_blank">License</a></p>
+              <p><b>Bootstrap</b> created by <a href="https://about.twitter.com/company" target="_blank">Twitter</a>.  (<a href="https://github.com/twbs/bootstrap" target="_blank">Bootstrap Github</a>). License: <a href="https://github.com/twbs/bootstrap/blob/master/LICENSE" target="_blank">MIT</a></p>
+              <p><b>Mapbox.js</b> created by <a href="https://www.mapbox.com/" target="_blank">Mapbox</a>.  (<a href="https://github.com/mapbox/mapbox.js" target="_blank">Mapbox.js Github</a>). <a href="https://github.com/mapbox/mapbox.js/blob/mb-pages/LICENSE.md" target="_blank">License</a></p>
+              <p><b>Typeahead</b> created by <a href="https://about.twitter.com/company" target="_blank">Twitter</a>.  (<a href="https://github.com/twitter/typeahead.js" target="_blank">Typeahead Github</a>). <a href="https://github.com/twitter/typeahead.js/blob/master/LICENSE" target="_blank">License</a></p>
+              <p><b>Leaflet Locate Control</b> created by <a href="http://domoritz.de/" target="_blank">Dominik Moritz</a>.  (<a href="https://github.com/domoritz/leaflet-locatecontrol" target="_blank">Locate Control Github</a>). License: <a href="https://github.com/domoritz/leaflet-locatecontrol/blob/gh-pages/LICENSE" target="_blank">MIT</a></p>
+              <p><b>Leaflet Grouped Layer Control</b> created by <a href="https://medium.com/@ismyrnow" target="_blank">Ishmael Smyrnow</a>.  (<a href="https://github.com/ismyrnow/Leaflet.groupedlayercontrol" target="_blank">Grouped Layer Control Github</a>). License: <a href="https://github.com/ismyrnow/Leaflet.groupedlayercontrol/blob/gh-pages/MIT-LICENSE.txt" target="_blank">MIT</a></p>
             </div>
           </div>
         </div><!-- /.modal-content -->
@@ -146,10 +152,11 @@
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/typeahead.jquery.js"></script>    
-    <script src="assets/js/locations.js"></script>	
-
+    <script src="assets/js/locations.js"></script>	<!-- searchbox data -->
+    <script src="assets/js/lgbasic.js"></script>	 <!--lgbasic data -->
     <script src="assets/leafletv08/leaflet.js"></script>
     <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.js'></script>
+     <script src="assets/leafletajax/la.test.js"></script>
     <script src="//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js"></script>
     <script src="assets/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js"></script>
     <script src="assets/js/app.js"></script>
