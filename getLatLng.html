@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Get LatLng</title>
+	<meta charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/leafletv08/leaflet.css">
+</head>
+<body>
+	<div id="map" style="width: 600px; height: 400px"></div>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="assets/leafletv08/leaflet.js"></script>
+	<script>
+    var locationsarray=[];
+		var map = L.map('map').setView([40, -104], 7);
+
+		L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: 'examples.map-i875mjb7'
+		}).addTo(map);
+
+
+      
+      var boroughs = L.geoJson(null, {
+  style: function (feature) {
+    return {
+      color: "black",
+      fill: false,
+      opacity: 1,
+      clickable: false
+    };
+  },
+  onEachFeature: function (feature, layer) {
+    var obja={}, objb={}, objc={};
+
+  if(feature.properties.lgid){
+    obja.id=feature.properties.lgid;
+    obja.bb=layer.getBounds().toBBoxString();   
+    locationsarray.push(obja);
+  }
+  if(feature.properties.lgname){
+    objb.id=feature.properties.lgname;
+    objb.bb=layer.getBounds().toBBoxString();   
+    locationsarray.push(objb);
+  }    
+  }
+});
+$.getJSON("data/places.geojson", function (data) {
+  boroughs.addData(data).addTo(map);
+
+  
+});
+      
+//JSON.stringify(locationsarray) in console
+
+
+	</script>
+</body>
+</html>
+
+

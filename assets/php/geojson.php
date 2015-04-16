@@ -39,7 +39,7 @@ $activearray=[];
 $filterarray=[];
 
 
-$active='';  //comma delimited list of lgstatusid's, if '0' then all
+$active='0';  //comma delimited list of lgstatusid's, if '0' then all
 if (isset($_GET['active'])){$active = make_safe($_GET['active']);}
 
 if($active<>'0'){
@@ -58,7 +58,7 @@ if($active<>'0'){
 
 
 
-$filter='';  //comma delimited list of lgtypeid's, if '0' then all
+$filter='0';  //comma delimited list of lgtypeid's, if '0' then all
 if (isset($_GET['filter'])){$filter = make_safe($_GET['filter']);}
 
 if($filter<>'0'){
@@ -77,7 +77,7 @@ if($filter<>'0'){
 
 
 //get simplify factor
-if (isset($_GET['zoom'])){$zoom=make_safe($_GET['zoom']);}else{$zoom=16;}
+if (isset($_GET['zoom'])){$zoom=make_safe($_GET['zoom']);}else{$zoom=17;}
 
 if($zoom==2){$tolerance=0.2;} //past minZoom
 if($zoom==3){$tolerance=0.1;} //past minZoom
@@ -94,7 +94,7 @@ if($zoom==13){$tolerance=0.00025;}
 if($zoom==14){$tolerance=0.0001;}
 if($zoom==15){$tolerance=0.0001;}
 if($zoom==16){$tolerance=0.0001;}
-
+if($zoom==17){$tolerance=0;}
 
   
 // attempt a connection
@@ -113,7 +113,7 @@ $bbstr=""; //bounding box string
 if (isset($_GET['bb'])){
   $bb = make_safe($_GET['bb']);
 $bbstr="bounds.test_rp.geom && ST_MakeEnvelope(".$bb.", 4326) ";
-}  //bounding box example: "-105,40,-104,39" no spaces no quotes
+}else{$bbstr=" 1=1 ";}  //bounding box example: "-105,40,-104,39" no spaces no quotes
 
 
 
@@ -146,6 +146,7 @@ $sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_trans
 
 
 //echo $sql;
+//exit;
 
 $result = pg_query($dbh, $sql);
 

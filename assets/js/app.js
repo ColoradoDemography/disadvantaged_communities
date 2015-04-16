@@ -1,6 +1,14 @@
 
+//app moving pieces: To Update as Needed
+//------------------
+//bbox.js - created using getLatLng.html and JSON.stringify(locationsarray) in console - used for search bounding boxes
+//lgbasic table in postgres dola.bounds.lgbasic - export lgbasic from Oracle occasionally and reload here
+//districts table in dola.bounds.lgbasic - as needed when district boundaries change
 
-var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6';
+//export counties from TIGER, munis from TIGER (because TIGER has places), Districts Shapefile from DOLA - create geojson files (remember WGS84), feed to getLatLng.html
+//  - - - - remember to rename county name and muni name fields to lgname so that getLatLng.html can work with it
+
+var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6', limit=200;
 //active = whether to show inactive districts.  Active=0 : show all, including inactive.  Active=1 : show only active
 //filter = comma delimited list of district lgtypes to show
 
@@ -32,7 +40,7 @@ L.Control.Command = L.Control.extend({
         .addListener(selectUI, 'change', refilter); 
       
    var option;
-   var inputdata = "Metropolitan Districts||Park & Recreation Districts||Fire Protection Districts||Hospital Districts||Water & Sanitation Districts||Library Districts||School Districts||All Other Districts";
+   var inputdata = "Metropolitan Districts||Park & Recreation Districts||Fire Protection Districts||Hospital Districts||Water & Sanitation Districts||Library Districts||School Districts||Other Districts||All Districts";
 
     inputdata.split( '||' ).forEach(function( item ) {
         option = document.createElement( 'option' );
@@ -66,14 +74,15 @@ function refilter(){
   var districtfilter = $('.seldiv :selected').text();  
   
   switch (districtfilter) {
-      case 'Metropolitan District': filter = "6"; break;
+      case 'All Districts': filter = "0"; break;      
+      case 'Metropolitan Districts': filter = "6"; break;
       case 'Park & Recreation Districts': filter = "7"; break;
       case 'Fire Protection Districts': filter = "8"; break;
       case 'Hospital Districts': filter = "9"; break;
       case 'Water & Sanitation Districts': filter = "10,11,12"; break;  
       case 'Library Districts': filter = "16"; break;
       case 'School Districts': filter = "99"; break;
-      case 'All Other Districts': filter = "13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,62,63,64,65,66,67,68,69,71,72,73,74,75,76,77,78,79,80,95,96,97,98"; break;
+      case 'Other Districts': filter = "13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,62,63,64,65,66,67,68,69,71,72,73,74,75,76,77,78,79,80,95,96,97,98"; break;
       }
   
   if(ischecked){active='0';}else{active='1';}
@@ -134,15 +143,28 @@ function sizeLayerControl() {
         //we calculate a bounding box equal much larger than the actual visible map.  This preloades shapes that are off the map.  Combined with the center point query, this will allow us to not have to requery the database on every map movement.
         newbounds = (coord.swlng - diff2) + "," + (coord.swlat - diff1) + "," + (coord.nelng + diff2) + "," + (coord.nelat + diff1);
 
-        geojsonLayer.refresh("assets/php/geojson.php?limit=50&active="+active+"&filter="+filter+"&bb=" + newbounds + "&zoom=" + map.getZoom() ); //add a new layer replacing whatever is there
+        geojsonLayer.refresh("assets/php/geojson.php?limit="+limit+"&active="+active+"&filter="+filter+"&bb=" + newbounds + "&zoom=" + map.getZoom() ); //add a new layer replacing whatever is there
 
     }
+
+
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
 
 
 
     //after successfull ajax call, data is sent here
     function getJson(data) {
 
+      // Get the size of an object
+      var size = Object.size(data.features);
+
+      if(size===limit){$('#notice').show();setTimeout(function(){ $('#notice').hide(); }, 2000);}
 
         geojsonLayer.clearLayers(); //(mostly) eliminates double-draw (should be technically unneccessary if you look at the code of leaflet-ajax...but still seems to help)
         geojsonLayer.addData(data);
@@ -394,16 +416,28 @@ $('#the-basics .typeahead').typeahead({ hint: true,  highlight: true,  minLength
 $('#the-basics .typeahead').on('typeahead:selected', function (e, datum) { searchresult(datum); }).on('typeahead:autocompleted', function (e, datum) {	searchresult(datum);});	
 	
 function searchresult(result){
+  
+  var id= result.value;
+  var strbb;
+  var southWest, northEast;
+  var bounds;
+  
+  for(var i in bbox){
+    if(bbox[i].id===id){strbb=bbox[i].bb;}
+    }
 
-for(i=1;i<523;i++){
-	if(lv[i].n==result.value){
-		map.panTo(new L.LatLng(lv[i].lat,lv[i].lng));
-		}
-	}
+    bbarray=strbb.split(',');
+    southWest = new L.LatLng(bbarray[1], bbarray[0]);
+    northEast = new L.LatLng(bbarray[3], bbarray[2]);
+    bounds = new L.LatLngBounds(southWest, northEast);
+    map.fitBounds(bounds);
+  
 }
 
 
 function onEachFeature(feature, layer) {
+  
+  
   
        function typelookup(district){
          
