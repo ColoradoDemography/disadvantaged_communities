@@ -182,3 +182,43 @@ input[type="radio"], input[type="checkbox"] {
   margin-right: 0px;
   
 }
+
+
+
+
+.leaflet-control-command-interior
+{
+    width: 200px;
+    height: 100px;
+    display: block;
+    padding: 3px;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border: 1px solid #999;
+  border-color: rgba(0,0,0,.4);
+    box-shadow: none;
+    cursor: auto;
+    text-align: center;
+    background-color: #FFFFFF;
+  color: rgba(0,0,0,.75);
+  z-index: 10;
+}
+
+.ctrldesc{
+  margin-top: 5px;
+}
+
+.seldiv{
+  margin-top: 9px;
+  margin-bottom: 8px;
+}
+
+.titletext{
+  font-size: 12px;
+}
+
+.hrcss{
+  border-color: #C9C9C9;
+  margin: 2px;
+}

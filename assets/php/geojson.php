@@ -29,21 +29,60 @@ function make_safe($string) {
 
 //$GET Variables
 
-//potential multi select (comma delimited list)
-if (isset($_GET['lgid'])){$geoid = make_safe($_GET['lgid']);}
 
 $db ='dola';
 $schema='bounds';
 $limit=100;  //by default limits to 100 search results.  override by setting limit= in GET string
 if (isset($_GET['limit'])){$limit = make_safe($_GET['limit']);}
 
+$activearray=[];
+$filterarray=[];
+
+
+$active='';  //comma delimited list of lgstatusid's, if '0' then all
+if (isset($_GET['active'])){$active = make_safe($_GET['active']);}
+
+if($active<>'0'){
+  $activearray=explode(",", $active);
+  $activestr="";
+  
+  foreach($activearray as $a){
+          $activestr=$activestr." lgstatusid='".$a."' or";    
+  }
+  
+    //trim last trailing 'or'
+  $activestr=substr($activestr,0,-2); 
+  $activestr=" and (".$activestr.")";
+  
+}else{$activestr='';}
+
+
+
+$filter='';  //comma delimited list of lgtypeid's, if '0' then all
+if (isset($_GET['filter'])){$filter = make_safe($_GET['filter']);}
+
+if($filter<>'0'){
+  $filterarray=explode(",", $filter);
+  $filterstr="";
+  
+  foreach($filterarray as $b){
+          $filterstr=$filterstr." lgtypeid='".$b."' or";    
+  }
+  
+    //trim last trailing 'or'
+  $filterstr=substr($filterstr,0,-2); 
+  $filterstr=" and (".$filterstr.")";
+  
+}else{$filterstr='';}
+
+
 //get simplify factor
 if (isset($_GET['zoom'])){$zoom=make_safe($_GET['zoom']);}else{$zoom=16;}
 
-if($zoom==2){$tolerance=0.2;}
-if($zoom==3){$tolerance=0.1;}
-if($zoom==4){$tolerance=0.07;}
-if($zoom==5){$tolerance=0.04;}
+if($zoom==2){$tolerance=0.2;} //past minZoom
+if($zoom==3){$tolerance=0.1;} //past minZoom
+if($zoom==4){$tolerance=0.07;} //past minZoom
+if($zoom==5){$tolerance=0.04;} //past minZoom
 if($zoom==6){$tolerance=0.018;}
 if($zoom==7){$tolerance=0.01;}
 if($zoom==8){$tolerance=0.005;}
@@ -78,9 +117,33 @@ $bbstr="bounds.test_rp.geom && ST_MakeEnvelope(".$bb.", 4326) ";
 
 
 
+$lgid='';  //comma delimited list of lgid's
+if (isset($_GET['lgid'])){$lgid = make_safe($_GET['lgid']);}
+
+if($lgid<>''){
+  $lgidarray=explode(",", $lgid);
+  $lgidstr="";
+  
+  foreach($lgidarray as $c){
+          $lgidstr=$lgidstr." lgid='".$c."' or";    
+  }
+  
+    //trim last trailing 'or'
+  $lgidstr=substr($lgidstr,0,-2); 
+  $lgidstr="where (".$lgidstr.")";
+  
+}else{$lgidstr='';}
+
+
   //CONSTRUCT MAIN SQL STATEMENT
-// execute query
-$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from bounds.test_rp natural join bounds.lgbasic where ".$bbstr." limit $limit;";
+
+//if lgid is given, override everything else
+if (isset($_GET['lgid'])){
+$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from bounds.test_rp natural join bounds.lgbasic ".$lgidstr.";";
+}else{
+$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from bounds.test_rp natural join bounds.lgbasic where ".$bbstr.$activestr.$filterstr." limit $limit;";
+}
+
 
 //echo $sql;
 

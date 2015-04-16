@@ -1,4 +1,89 @@
-var map, globalbusy, geojsonLayer, lastzoom;
+
+
+var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6';
+//active = whether to show inactive districts.  Active=0 : show all, including inactive.  Active=1 : show only active
+//filter = comma delimited list of district lgtypes to show
+
+
+
+
+//Leaflet Custom Control
+L.Control.Command = L.Control.extend({
+    options: {
+        position: 'topleft',
+    },
+
+    onAdd: function (map) {
+        var controlDiv = L.DomUtil.create('div', 'leaflet-control-command');
+
+
+        var controlUI = L.DomUtil.create('div', 'leaflet-control-command-interior', controlDiv);
+        controlUI.title = 'Filter Districts';
+        var textdiv = L.DomUtil.create('div','ctrldesc',controlUI);
+        var divsec = L.DomUtil.create('b','titletext',textdiv);
+        divsec.innerHTML = 'Filter Districts';
+        var hrbreak = L.DomUtil.create('hr','hrcss',controlUI);      
+        var selectUI = L.DomUtil.create('select', 'seldiv', controlUI);
+        selectUI.title = 'Select District Category';     
+      
+             L.DomEvent
+            .addListener(selectUI, 'change', L.DomEvent.stopPropagation)
+            .addListener(selectUI, 'change', L.DomEvent.preventDefault)
+        .addListener(selectUI, 'change', refilter); 
+      
+   var option;
+   var inputdata = "Metropolitan Districts||Park & Recreation Districts||Fire Protection Districts||Hospital Districts||Water & Sanitation Districts||Library Districts||School Districts||All Other Districts";
+
+    inputdata.split( '||' ).forEach(function( item ) {
+        option = document.createElement( 'option' );
+        option.value = option.textContent = item;
+        selectUI.appendChild( option );
+    });
+      
+      var chkdiv = L.DomUtil.create('div', '', controlUI);
+
+      var x = L.DomUtil.create('input', '', chkdiv);
+        x.setAttribute("type", "checkbox");
+        x.id="ischk";
+      var t=document.createTextNode("Show Inactive Districts");
+        chkdiv.appendChild(t); 
+
+      x.addEventListener ("change", refilter, false);
+
+        return controlDiv;
+    }
+});
+
+
+L.control.command = function (options) {
+    return new L.Control.Command(options);
+};
+
+
+function refilter(){
+
+  var ischecked = $('#ischk').is(':checked');
+  var districtfilter = $('.seldiv :selected').text();  
+  
+  switch (districtfilter) {
+      case 'Metropolitan District': filter = "6"; break;
+      case 'Park & Recreation Districts': filter = "7"; break;
+      case 'Fire Protection Districts': filter = "8"; break;
+      case 'Hospital Districts': filter = "9"; break;
+      case 'Water & Sanitation Districts': filter = "10,11,12"; break;  
+      case 'Library Districts': filter = "16"; break;
+      case 'School Districts': filter = "99"; break;
+      case 'All Other Districts': filter = "13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,62,63,64,65,66,67,68,69,71,72,73,74,75,76,77,78,79,80,95,96,97,98"; break;
+      }
+  
+  if(ischecked){active='0';}else{active='1';}
+  
+  ajaxcall();
+  
+}
+
+
+
 
 //map bounds the last time the data was loaded
 var coord={};
@@ -49,7 +134,7 @@ function sizeLayerControl() {
         //we calculate a bounding box equal much larger than the actual visible map.  This preloades shapes that are off the map.  Combined with the center point query, this will allow us to not have to requery the database on every map movement.
         newbounds = (coord.swlng - diff2) + "," + (coord.swlat - diff1) + "," + (coord.nelng + diff2) + "," + (coord.nelat + diff1);
 
-        geojsonLayer.refresh("assets/php/geojson.php?limit=50&bb=" + newbounds + "&zoom=" + map.getZoom() ); //add a new layer replacing whatever is there
+        geojsonLayer.refresh("assets/php/geojson.php?limit=50&active="+active+"&filter="+filter+"&bb=" + newbounds + "&zoom=" + map.getZoom() ); //add a new layer replacing whatever is there
 
     }
 
@@ -136,6 +221,8 @@ map = L.map("map", {
   zoom: 10,
   center: [40, -104.979378],
   layers: [mbstyle],
+  minZoom: 6,
+  maxZoom: 16,
   zoomControl: false,
   attributionControl: false
 });
@@ -157,6 +244,8 @@ topPane.appendChild(topLayer.getContainer());
 
 
 
+var LeafletFilterControl = L.control.command({postion: 'topleft'});
+map.addControl(LeafletFilterControl);
 
 
 /* Attribution control */  //bootleaf
@@ -420,8 +509,8 @@ function onEachFeature(feature, layer) {
        }
        
            if (feature.properties) {
-             
-         var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + feature.properties.lgid + "</td></tr>" + "<tr><th>Type</th><td>" + typelookup(feature.properties.lgtypeid) + "</td></tr><tr><th>Status</th><td>" + statuslookup(feature.properties.lgstatusid) + "</td></tr>" + "<table>";
+
+         var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + feature.properties.lgid + "</td></tr>" + "<tr><th>Type</th><td>" + typelookup(feature.properties.lgtypeid) + "</td></tr><tr><th>Status</th><td>" + statuslookup(feature.properties.lgstatusid) + "</td></tr>" + "<tr><th>Source</th><td>" + feature.properties.source + "</td></tr>" + "<table>";
                  var title=feature.properties.lgname;
       layer.on({
         click: function (e) {
