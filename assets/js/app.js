@@ -8,6 +8,10 @@
 //export counties from TIGER, munis from TIGER (because TIGER has places), Districts Shapefile from DOLA - create geojson files (remember WGS84), feed to getLatLng.html
 //  - - - - remember to rename county name and muni name fields to lgname so that getLatLng.html can work with it
 
+
+//run script to create individual download shapefiles
+
+
 var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6', limit=200;
 //active = whether to show inactive districts.  Active=0 : show all, including inactive.  Active=1 : show only active
 //filter = comma delimited list of district lgtypes to show
@@ -271,15 +275,7 @@ map.addControl(LeafletFilterControl);
 
 
 /* Attribution control */  //bootleaf
-var attributionControl = L.control({
-    position: "bottomright"
-});
-attributionControl.onAdd = function() {
-    var div = L.DomUtil.create("div", "leaflet-control-attribution");
-  div.innerHTML = "<span class='hidden-xs'>Developed by: <a href='http://www.colorado.gov/demography'>Colorado State Demography Office</a></span><span class='spanhide'> | <a href='#' onclick='$(\"#attributionModal\").modal(\"show\"); return false;'>Sources</a></span>";
-    return div;
-};
-map.addControl(attributionControl);
+
 
 //MapBox and OpenStreet Map Required Attribution
 var attributionControl2 = L.control({
@@ -291,6 +287,19 @@ attributionControl2.onAdd = function() {
     return div;
 };
 map.addControl(attributionControl2);
+
+
+var attributionControl = L.control({
+    position: "bottomright"
+});
+attributionControl.onAdd = function() {
+    var div = L.DomUtil.create("div", "leaflet-control-attribution");
+  div.innerHTML = "<span class='hidden-xs'>Developed by: <a href='http://www.colorado.gov/demography'>Colorado State Demography Office</a></span><span class='spanhide'> | <a href='#' onclick='$(\"#attributionModal\").modal(\"show\"); return false;'>Sources</a></span>";
+    return div;
+};
+map.addControl(attributionControl);
+
+
 
 var zoomControl = L.control.zoom({
   position: "bottomright"
@@ -435,6 +444,66 @@ function searchresult(result){
 }
 
 
+
+
+    // Create a mouseout event that undoes the mouseover changes
+    function mouseout(e) {
+         
+      var layer = e.target;
+
+            geojsonLayer.setStyle(stylefunc);
+      
+        $("#popup").remove();
+    }
+
+  
+  //mouseover highlight
+    function highlightFeature(e) {
+      
+         var layer = e.target;
+      
+        var fp = e.target.feature.properties, popup, hed;
+
+
+           layer.setStyle({
+                opacity: 1,
+                weight: 2,
+                color: 'black'
+            });
+
+      
+      //no formatting for type=regular - think: median year housing unit built (only one)
+
+        // Create a popup
+        popup = $("<div></div>", {
+            id: "popup",
+            css: {
+                position: "absolute",
+                bottom: "50px",
+                left: "10px",
+                zIndex: 1002,
+                backgroundColor: "white",
+                padding: "8px",
+                border: "1px solid #ccc"
+            }
+        });
+
+        // Insert a headline into that popup
+        hed = $("<div></div>", {
+            text: fp.lgname,
+            css: {
+                fontSize: "16px",
+                marginBottom: "3px"
+            }
+        }).appendTo(popup);
+
+        // Add the popup to the map
+        popup.appendTo("#map");
+      
+
+    }
+
+
 function onEachFeature(feature, layer) {
   
   
@@ -552,7 +621,9 @@ function onEachFeature(feature, layer) {
           $("#feature-info").html(content);
           $("#featureModal").modal("show");
           this.bringToBack();  //to deal with overlapping features.  click again and obscured feature is now on top
-        }
+        },
+        mouseover: highlightFeature,
+        mouseout: mouseout
      });
            }
   
