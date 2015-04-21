@@ -12,11 +12,16 @@
 //run script to create individual download shapefiles
 
 
-var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6', limit=200;
+var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6', limit=200, lgid="";
 //active = whether to show inactive districts.  Active=0 : show all, including inactive.  Active=1 : show only active
 //filter = comma delimited list of district lgtypes to show
 
-
+//map bounds the last time the data was loaded
+var coord={};
+coord.nelat='';
+coord.nelng='';
+coord.swlat='';
+coord.swlng='';
 
 
 //Leaflet Custom Control
@@ -33,10 +38,44 @@ L.Control.Command = L.Control.extend({
         controlUI.title = 'Filter Districts';
         var textdiv = L.DomUtil.create('div','ctrldesc',controlUI);
         var divsec = L.DomUtil.create('b','titletext',textdiv);
-        divsec.innerHTML = 'Filter Districts';
-        var hrbreak = L.DomUtil.create('hr','hrcss',controlUI);      
-        var selectUI = L.DomUtil.create('select', 'seldiv', controlUI);
+        divsec.innerHTML = 'Filter by:&nbsp;&nbsp;&nbsp;&nbsp;';
+      
+        var y = L.DomUtil.create('input', '', textdiv);
+        y.setAttribute("type", "radio");
+        y.id='rtype';
+        y.name="rad";
+        y.checked = true;
+        divsec.appendChild(y); 
+      
+        L.DomEvent
+            .addListener(y, 'change', L.DomEvent.stopPropagation)
+            .addListener(y, 'change', L.DomEvent.preventDefault)
+        .addListener(y, 'change', showhide); 
+         
+        divsec.appendChild(document.createTextNode(" Type ")); 
+        divsec.appendChild( document.createTextNode( '\u00A0' ) );
+      
+        var z = L.DomUtil.create('input', '', textdiv);
+        z.setAttribute("type", "radio");
+        z.id='rname';
+        z.name="rad";
+        divsec.appendChild(z);      
+      
+        L.DomEvent
+            .addListener(z, 'change', L.DomEvent.stopPropagation)
+            .addListener(z, 'change', L.DomEvent.preventDefault)
+        .addListener(z, 'change', showhide); 
+      
+        divsec.appendChild(document.createTextNode(" Name or ID")); 
+
+        var hrbreak = L.DomUtil.create('hr','',controlUI);
+      hrbreak.id="hrcss";
+      
+       var opt1div = L.DomUtil.create('div', '', controlUI);
+      opt1div.id = 'opt1div';
+        var selectUI = L.DomUtil.create('select', 'seldiv', opt1div);
         selectUI.title = 'Select District Category';     
+           
       
              L.DomEvent
             .addListener(selectUI, 'change', L.DomEvent.stopPropagation)
@@ -52,7 +91,7 @@ L.Control.Command = L.Control.extend({
         selectUI.appendChild( option );
     });
       
-      var chkdiv = L.DomUtil.create('div', '', controlUI);
+      var chkdiv = L.DomUtil.create('div', '', opt1div);
 
       var x = L.DomUtil.create('input', '', chkdiv);
         x.setAttribute("type", "checkbox");
@@ -60,17 +99,47 @@ L.Control.Command = L.Control.extend({
       var t=document.createTextNode("Show Inactive Districts");
         chkdiv.appendChild(t); 
 
-      x.addEventListener ("change", refilter, false);
-
+      x.addEventListener("change", refilter, false);
+      
+        var opt2div = L.DomUtil.create('div', '', controlUI);
+      opt2div.id = 'opt2div';
+         opt2div.style.display='none'; 
+       opt2div.className="form-group has-feedback";  
+      
+      var w = L.DomUtil.create('input', '', opt2div);
+        w.setAttribute("type", "text");
+        w.id="slgid";
+      w.placeholder="Search";
+      w.className="form-control typeahead";  
+      
         return controlDiv;
     }
 });
-
 
 L.control.command = function (options) {
     return new L.Control.Command(options);
 };
 
+function showhide(){
+  
+  var typediv=document.getElementById("opt1div");
+  var namediv=document.getElementById("opt2div");  
+  var hrcss=document.getElementById("hrcss"); 
+
+  if($('#rtype').is(':checked')){
+      typediv.style.display='inline';
+      namediv.style.display='none';    
+      hrcss.style.marginBottom="5px";    
+      lgid="";
+    ajaxcall();
+  }else{
+    document.getElementById("slgid").value = "";
+      typediv.style.display='none';
+      namediv.style.display='inline';  
+      hrcss.style.marginBottom="15px";
+  }
+  
+}
 
 function refilter(){
 
@@ -95,20 +164,9 @@ function refilter(){
   
 }
 
-
-
-
-//map bounds the last time the data was loaded
-var coord={};
-coord.nelat='';
-coord.nelng='';
-coord.swlat='';
-coord.swlng='';
-
 $(window).resize(function() {
   sizeLayerControl();
 });
-
 
 $("#about-btn").click(function() {
   $("#aboutModal").modal("show");
@@ -116,19 +174,18 @@ $("#about-btn").click(function() {
   return false;
 });
 
-
 $("#nav-btn").click(function() {
   $(".navbar-collapse").collapse("toggle");
   return false;
 });
 
-
 function sizeLayerControl() {
   $(".leaflet-control-layers").css("max-height", $("#map").height() - 50);
 }
 
-    function ajaxcall() {
+function ajaxcall() {
          
+              $("#popup").remove();
       
       var r, diff1, diff2, newbounds;     
 
@@ -147,10 +204,9 @@ function sizeLayerControl() {
         //we calculate a bounding box equal much larger than the actual visible map.  This preloades shapes that are off the map.  Combined with the center point query, this will allow us to not have to requery the database on every map movement.
         newbounds = (coord.swlng - diff2) + "," + (coord.swlat - diff1) + "," + (coord.nelng + diff2) + "," + (coord.nelat + diff1);
 
-        geojsonLayer.refresh("assets/php/geojson.php?limit="+limit+"&active="+active+"&filter="+filter+"&bb=" + newbounds + "&zoom=" + map.getZoom() ); //add a new layer replacing whatever is there
+        geojsonLayer.refresh("assets/php/geojson.php?limit="+limit+"&active="+active+"&filter="+filter+"&bb=" + newbounds + "&zoom=" + map.getZoom() + lgid ); //add a new layer replacing whatever is there
 
     }
-
 
 Object.size = function(obj) {
     var size = 0, key;
@@ -160,10 +216,8 @@ Object.size = function(obj) {
     return size;
 };
 
-
-
-    //after successfull ajax call, data is sent here
-    function getJson(data) {
+//after successfull ajax call, data is sent here
+function getJson(data) {
 
       // Get the size of an object
       var size = Object.size(data.features);
@@ -210,28 +264,6 @@ function stylefunc(feature){
   
 }
 
-/* Basemap Layers */
-var mapquestOSM = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  subdomains: ["otile1", "otile2", "otile3", "otile4"],
-  attribution: 'Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">. Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA.'
-});
-var mapquestOAM = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg", {
-  maxZoom: 18,
-  subdomains: ["oatile1", "oatile2", "oatile3", "oatile4"],
-  attribution: 'Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>. Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency'
-});
-var mapquestHYB = L.layerGroup([L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg", {
-  maxZoom: 18,
-  subdomains: ["oatile1", "oatile2", "oatile3", "oatile4"]
-}), L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/hyb/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  subdomains: ["oatile1", "oatile2", "oatile3", "oatile4"],
-  attribution: 'Labels courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">. Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA. Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency'
-})]);
-
-
-
 
 L.mapbox.accessToken = 'pk.eyJ1Ijoic3RhdGVjb2RlbW9nIiwiYSI6Ikp0Sk1tSmsifQ.hl44-VjKTJNEP5pgDFcFPg';
 
@@ -240,7 +272,6 @@ var mbstyle = L.mapbox.tileLayer('statecodemog.aa380654', {
     'zIndex': 1
 });
 var mbsat = L.mapbox.tileLayer('statecodemog.km7i3g01');
-
 
 
 map = L.map("map", {
@@ -267,16 +298,12 @@ var topLayer = mblabels.addTo(map);
 topPane.appendChild(topLayer.getContainer());
 
 
-
-
-
 var LeafletFilterControl = L.control.command({postion: 'topleft'});
 map.addControl(LeafletFilterControl);
 
 
 /* Attribution control */  //bootleaf
-
-
+{
 //MapBox and OpenStreet Map Required Attribution
 var attributionControl2 = L.control({
     position: "bottomright"
@@ -298,7 +325,7 @@ attributionControl.onAdd = function() {
     return div;
 };
 map.addControl(attributionControl);
-
+}
 
 
 var zoomControl = L.control.zoom({
@@ -342,12 +369,10 @@ if (document.body.clientWidth <= 767) {
   var isCollapsed = true;
 } else {  var isCollapsed = false; }
 
-
 var baseLayers = {
     "Mapbox: Satellite": mbsat,
     "Mapbox: Contrast Base": mbstyle
 };
-
 
 //var groupedOverlays = {
 //  "District Categories": {
@@ -359,34 +384,17 @@ var layerControl = L.control.groupedLayers(baseLayers, {}, {
   collapsed: isCollapsed
 }).addTo(map);
 
-/* Highlight search box text on click */
-$("#searchbox").click(function () {
-  $(this).select();
-});
-
-/* Prevent hitting enter from refreshing the page */
+/* Prevent hitting enter from refreshing the page 
 $("#searchbox").keypress(function (e) {
   if (e.which == 13) {
     e.preventDefault();
   }
-});
+});*/
 
 // Leaflet patch to make layer control scrollable on touch browsers
 var container = $(".leaflet-control-layers")[0];
 if (!L.Browser.touch) {  L.DomEvent.disableClickPropagation(container).disableScrollPropagation(container);} else { L.DomEvent.disableClickPropagation(container);}
 $("#loading").hide();
-
-
-
-
-
-
-//BELOW FOR TYPEAHEAD
-
-/* Highlight search box text on click */
-$("#the-basics").click(function () {
-  $(this).select();
-});
    
 var substringMatcher = function(strs) {
   return function findMatches(q, cb) {
@@ -412,6 +420,14 @@ var substringMatcher = function(strs) {
   };
 };
 
+
+//BELOW FOR TYPEAHEAD Main Search
+{
+/* Highlight search box text on click */
+$("#the-basics").click(function () {
+  $(this).select();
+});
+
  $("#searchbox").click(function () {
   $(this).select();
 });
@@ -424,6 +440,13 @@ $('#the-basics .typeahead').typeahead({ hint: true,  highlight: true,  minLength
 	
 $('#the-basics .typeahead').on('typeahead:selected', function (e, datum) { searchresult(datum); }).on('typeahead:autocompleted', function (e, datum) {	searchresult(datum);});	
 	
+$("#the-basics").on('keyup', function(e){
+    if(e.which == 13) {
+        $(".tt-suggestion:first-child", this).trigger('click');
+    }
+});
+}
+
 function searchresult(result){
   
   var id= result.value;
@@ -442,12 +465,68 @@ function searchresult(result){
     map.fitBounds(bounds);
   
 }
+              
+//Typeahead (Name or ID Search)
+{
+$("#opt2div").click(function () {
+  $(this).select();
+});
+
+ $("#slgid").click(function () {
+  $(this).select();
+});
+
+$('#opt2div .typeahead').typeahead({ hint: true,  highlight: true,  minLength: 4},{
+  name: 'districtsonly',
+  displayKey: 'value',
+  source: substringMatcher(districtsonly)
+});
+	
+$('#opt2div .typeahead').on('typeahead:selected', function (e, datum) { searchresult2(datum); }).on('typeahead:autocompleted', function (e, datum) {	searchresult2(datum);});	
+	
+
+$("#opt2div").on('keyup', function(e){
+    if(e.which == 13) {
+        $(".tt-suggestion:first-child", this).trigger('click');
+    }
+});
+}
+  
+function searchresult2(result){
+  
+  var id= result.value;
+  var strbb;
+  var southWest, northEast;
+  var bounds;
+  var firstchar;
+  var lgidindex;
+  
+  for(var i in districtsonly){
+    if(districtsonly[i]===id){
+      strbb=districtsbb[i];
+      firstchar = (id.charAt(0));
+      if(firstchar==="0" || firstchar==="1" || firstchar==="2" || firstchar==="3" || firstchar==="4" || firstchar==="5" || firstchar==="6" || firstchar==="7" || firstchar==="8" || firstchar==="9"){lgidindex=i;}else{lgidindex=i-1;}
+      //console.log(districtsonly[lgidindex]);
+    }
+    
+    }
+
+    bbarray=strbb.split(',');
+    southWest = new L.LatLng(bbarray[1], bbarray[0]);
+    northEast = new L.LatLng(bbarray[3], bbarray[2]);
+    bounds = new L.LatLngBounds(southWest, northEast);
+    map.fitBounds(bounds);
+  
+  
+
+  lgid='&lgid='+districtsonly[lgidindex];
+    ajaxcall();
+}
 
 
 
-
-    // Create a mouseout event that undoes the mouseover changes
-    function mouseout(e) {
+// Create a mouseout event that undoes the mouseover changes
+function mouseout(e) {
          
       var layer = e.target;
 
@@ -456,9 +535,8 @@ function searchresult(result){
         $("#popup").remove();
     }
 
-  
-  //mouseover highlight
-    function highlightFeature(e) {
+//mouseover highlight
+function highlightFeature(e) {
       
          var layer = e.target;
       
@@ -502,7 +580,6 @@ function searchresult(result){
       
 
     }
-
 
 function onEachFeature(feature, layer) {
   
@@ -628,8 +705,6 @@ function onEachFeature(feature, layer) {
            }
   
 }
-
-
 
 
 //on dom loaded
