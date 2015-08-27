@@ -32,6 +32,7 @@ function make_safe($string) {
 
 $db ='dola';
 $schema='bounds';
+$tname='polished';
 $limit=100;  //by default limits to 100 search results.  override by setting limit= in GET string
 if (isset($_GET['limit'])){$limit = make_safe($_GET['limit']);}
 
@@ -112,7 +113,7 @@ $bbstr=""; //bounding box string
 //potential single select
 if (isset($_GET['bb'])){
   $bb = make_safe($_GET['bb']);
-$bbstr="bounds.test_rp.geom && ST_MakeEnvelope(".$bb.", 4326) ";
+$bbstr=$schema.".".$tname.".geom && ST_MakeEnvelope(".$bb.", 4326) ";
 }else{$bbstr=" 1=1 ";}  //bounding box example: "-105,40,-104,39" no spaces no quotes
 
 
@@ -138,15 +139,23 @@ if($lgid<>''){
   //CONSTRUCT MAIN SQL STATEMENT
 
 //if lgid is given, override everything else
+
+/*
 if (isset($_GET['lgid'])){
-$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from bounds.test_rp natural join bounds.lgbasic ".$lgidstr.";";
+$sql = "SELECT lgid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from bounds.test_rp  ".$lgidstr.";";
 }else{
-$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from bounds.test_rp natural join bounds.lgbasic where ".$bbstr.$activestr.$filterstr." limit $limit;";
+$sql = "SELECT lgid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from bounds.test_rp  where ".$bbstr.$activestr.$filterstr." limit $limit;";
+}
+*/
+
+if (isset($_GET['lgid'])){
+$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from ".$schema.".".$tname." natural join ".$schema.".lgbasic ".$lgidstr.";";
+}else{
+$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from ".$schema.".".$tname." natural join ".$schema.".lgbasic where ".$bbstr.$activestr.$filterstr." limit $limit;";
 }
 
+  
 
-//echo $sql;
-//exit;
 
 $result = pg_query($dbh, $sql);
 

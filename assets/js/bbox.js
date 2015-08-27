@@ -533,7 +533,11 @@ var bbox = [{"id":"Saguache County","bb":"-107.001892,37.747809,-105.428647,38.4
 
 var locations=[];
 
-for(i=0;i<bbox.length;i++){locations.push(bbox[i].id);}
+for(i=0;i<bbox.length;i++){
+  if(bbox[i].t){
+  locations.push(bbox[i].id);
+  }
+            }
 
             
 //for name/id search  (we want to exclude cities/counties/places - for now - so we make two new arrays for typeahead to use; districtsonly has names and lgids of districts, while districtsbb has bounding box information (in the same index location) for each of the districts)            

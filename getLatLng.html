@@ -40,17 +40,18 @@
 
   if(feature.properties.lgid){
     obja.id=feature.properties.lgid;
-    obja.bb=layer.getBounds().toBBoxString();   
+    //obja.bb=layer.getBounds().toBBoxString();   
+    obja.bb=layer.getBounds().getCenter();
     locationsarray.push(obja);
   }
-  if(feature.properties.lgname){
-    objb.id=feature.properties.lgname;
-    objb.bb=layer.getBounds().toBBoxString();   
-    locationsarray.push(objb);
-  }    
+//   if(feature.properties.lgname){
+//     objb.id=feature.properties.lgname;
+//     objb.bb=layer.getBounds().toBBoxString();   
+//     locationsarray.push(objb);
+//   }    
   }
 });
-$.getJSON("data/places.geojson", function (data) {
+$.getJSON("data/districts.geojson", function (data) {
   boroughs.addData(data).addTo(map);
 
   

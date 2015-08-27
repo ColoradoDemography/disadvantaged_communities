@@ -2,14 +2,15 @@
 //app moving pieces: To Update as Needed
 //------------------
 //bbox.js - created using getLatLng.html and JSON.stringify(locationsarray) in console - used for search bounding boxes
-//lgbasic table in postgres dola.bounds.lgbasic - export lgbasic from Oracle occasionally and reload here
-//districts table in dola.bounds.lgbasic - as needed when district boundaries change
+//lgbasic table in postgres dola.bounds.lgbasic - use script: _ConnectOracle/lgbasic.php (on lajavaas) to create JSON.  use script: _ConnectOracle/lgbasic.php to load into Postgres
+//lg2cnty table in postgres dola.bounds.lg2cnty - use script: _ConnectOracle/lg2cnty.php (on lajavaas) to create JSON.  use script: _ConnectOracle/lg2cnty.php to load into Postgres
+
+//districts (currently test_rp) table in dola.bounds.lgbasic - as needed when district boundaries change
 
 //export counties from TIGER, munis from TIGER (because TIGER has places), Districts Shapefile from DOLA - create geojson files (remember WGS84), feed to getLatLng.html
 //  - - - - remember to rename county name and muni name fields to lgname so that getLatLng.html can work with it
 
 
-//run script to create individual download shapefiles
 
 
 var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6', limit=200, lgid="";
@@ -25,12 +26,14 @@ coord.swlng='';
 
 
 //Leaflet Custom Control
+      //create the custom control div in upper left
 L.Control.Command = L.Control.extend({
     options: {
         position: 'topleft',
     },
 
     onAdd: function (map) {
+      
         var controlDiv = L.DomUtil.create('div', 'leaflet-control-command');
 
 
@@ -38,7 +41,7 @@ L.Control.Command = L.Control.extend({
         controlUI.title = 'Filter Districts';
         var textdiv = L.DomUtil.create('div','ctrldesc',controlUI);
         var divsec = L.DomUtil.create('b','titletext',textdiv);
-        divsec.innerHTML = 'Filter by:&nbsp;&nbsp;&nbsp;&nbsp;';
+        divsec.innerHTML = 'Filter District by:&nbsp;&nbsp;&nbsp;&nbsp;';
       
         var y = L.DomUtil.create('input', '', textdiv);
         y.setAttribute("type", "radio");
@@ -91,15 +94,17 @@ L.Control.Command = L.Control.extend({
         selectUI.appendChild( option );
     });
       
-      var chkdiv = L.DomUtil.create('div', '', opt1div);
+      //Create the 'Show Inactive Districts' Control
+//       var chkdiv = L.DomUtil.create('div', '', opt1div);
 
-      var x = L.DomUtil.create('input', '', chkdiv);
-        x.setAttribute("type", "checkbox");
-        x.id="ischk";
-      var t=document.createTextNode("Show Inactive Districts");
-        chkdiv.appendChild(t); 
+//       var x = L.DomUtil.create('input', '', chkdiv);
+//         x.setAttribute("type", "checkbox");
+//         x.id="ischk";
+//       var t=document.createTextNode("Show Inactive Districts");
+//         chkdiv.appendChild(t); 
 
-      x.addEventListener("change", refilter, false);
+//       x.addEventListener("change", refilter, false);
+      
       
         var opt2div = L.DomUtil.create('div', '', controlUI);
       opt2div.id = 'opt2div';
@@ -120,6 +125,7 @@ L.control.command = function (options) {
     return new L.Control.Command(options);
 };
 
+//switch control from dropdown search to district searchbox
 function showhide(){
   
   var typediv=document.getElementById("opt1div");
@@ -141,6 +147,7 @@ function showhide(){
   
 }
 
+//sets global variable 'filter' equal to a comma separated list of lgtypeids.  Then gets those shapes from database.
 function refilter(){
 
   var ischecked = $('#ischk').is(':checked');
@@ -183,6 +190,7 @@ function sizeLayerControl() {
   $(".leaflet-control-layers").css("max-height", $("#map").height() - 50);
 }
 
+//calls php file that communicates with the database and retrieves geojson
 function ajaxcall() {
          
               $("#popup").remove();
@@ -222,6 +230,7 @@ function getJson(data) {
       // Get the size of an object
       var size = Object.size(data.features);
 
+  //if hit the max number of results - display popup notice on screen
       if(size===limit){$('#notice').show();setTimeout(function(){ $('#notice').hide(); }, 2000);}
 
         geojsonLayer.clearLayers(); //(mostly) eliminates double-draw (should be technically unneccessary if you look at the code of leaflet-ajax...but still seems to help)
@@ -244,7 +253,7 @@ function stylefunc(feature){
     'zIndex': 10
       };
             
-      //console.log(feature);
+      //gets last digit of lgid.  colors shape per that digit (pseudo random color scheme)
         switch ((feature.properties.lgid).toString().slice(-1)) {
             case '0': typical.color = "#5E5075"; return typical;
             case '1': typical.color = "#6DAF48"; return typical;
@@ -374,11 +383,6 @@ var baseLayers = {
     "Mapbox: Contrast Base": mbstyle
 };
 
-//var groupedOverlays = {
-//  "District Categories": {
-//    "Example": example
-//  }
-//};
 
 var layerControl = L.control.groupedLayers(baseLayers, {}, {
   collapsed: isCollapsed
@@ -468,6 +472,7 @@ function searchresult(result){
               
 //Typeahead (Name or ID Search)
 {
+  //does this set focus to the element?
 $("#opt2div").click(function () {
   $(this).select();
 });
@@ -690,12 +695,17 @@ function onEachFeature(feature, layer) {
        
            if (feature.properties) {
 
-         var content = "<table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + feature.properties.lgid + "</td></tr>" + "<tr><th>Type</th><td>" + typelookup(feature.properties.lgtypeid) + "</td></tr><tr><th>Status</th><td>" + statuslookup(feature.properties.lgstatusid) + "</td></tr>" + "<tr><th>Source</th><td>" + feature.properties.source + "</td></tr>" + "<table>";
+         var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + feature.properties.lgid + "</td></tr>" + "<tr><th>Type</th><td>" + typelookup(feature.properties.lgtypeid) + "</td></tr><tr><th>Status</th><td>" + statuslookup(feature.properties.lgstatusid) + "</td></tr>" + "<tr><th>Source</th><td>" + feature.properties.source + "</td></tr>" + "<table><br />";
                  var title=feature.properties.lgname;
       layer.on({
         click: function (e) {
           $("#feature-title").html(title);
           $("#feature-info").html(content);
+          
+          // other tab information
+          
+          // other tab information
+          
           $("#featureModal").modal("show");
           this.bringToBack();  //to deal with overlapping features.  click again and obscured feature is now on top
         },
