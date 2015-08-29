@@ -13,7 +13,7 @@
 
 
 
-var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6', limit=200, lgid="";
+var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6', limit=1000, lgid="";
 //active = whether to show inactive districts.  Active=0 : show all, including inactive.  Active=1 : show only active
 //filter = comma delimited list of district lgtypes to show
 
@@ -86,7 +86,7 @@ L.Control.Command = L.Control.extend({
         .addListener(selectUI, 'change', refilter); 
       
    var option;
-   var inputdata = "Metropolitan Districts||Park & Recreation Districts||Fire Protection Districts||Hospital Districts||Water & Sanitation Districts||Library Districts||School Districts||Other Districts||All Districts";
+   var inputdata = "Metropolitan Districts||Park & Recreation Districts||Fire Protection Districts||Hospital Districts||Water & Sanitation Districts||Library Districts||School Districts||Soil Conservation Districts||Cemetary Districts||Other Districts||All Districts";
 
     inputdata.split( '||' ).forEach(function( item ) {
         option = document.createElement( 'option' );
@@ -112,9 +112,11 @@ L.Control.Command = L.Control.extend({
        opt2div.className="form-group has-feedback";  
       
       var w = L.DomUtil.create('input', '', opt2div);
-        w.setAttribute("type", "text");
+  
         w.id="slgid";
-      w.placeholder="Search";
+      w.class='typeahead';
+      w.type='text';
+      w.placeholder="Search Districts";
       w.className="form-control typeahead";  
       
         return controlDiv;
@@ -160,9 +162,13 @@ function refilter(){
       case 'Fire Protection Districts': filter = "8"; break;
       case 'Hospital Districts': filter = "9"; break;
       case 'Water & Sanitation Districts': filter = "10,11,12"; break;  
-      case 'Library Districts': filter = "16"; break;
       case 'School Districts': filter = "99"; break;
-      case 'Other Districts': filter = "13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,62,63,64,65,66,67,68,69,71,72,73,74,75,76,77,78,79,80,95,96,97,98"; break;
+      case 'Soil Conservation Districts': filter = "20"; break;  
+      case 'Cemetary Districts': filter = "15"; break;
+      case 'Library Districts': filter = "16"; break;        
+      
+
+      case 'Other Districts': filter = "13,14,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,62,63,64,65,66,67,68,69,71,72,73,74,75,76,77,78,79,80,95,96,97,98"; break;
       }
   
   if(ischecked){active='0';}else{active='1';}
@@ -190,6 +196,7 @@ function sizeLayerControl() {
   $(".leaflet-control-layers").css("max-height", $("#map").height() - 50);
 }
 
+
 //calls php file that communicates with the database and retrieves geojson
 function ajaxcall() {
          
@@ -216,17 +223,19 @@ function ajaxcall() {
 
     }
 
-Object.size = function(obj) {
+
+
+//after successfull ajax call, data is sent here
+function getJson(data) {
+
+  Object.size = function(obj) {
     var size = 0, key;
     for (key in obj) {
         if (obj.hasOwnProperty(key)) size++;
     }
     return size;
 };
-
-//after successfull ajax call, data is sent here
-function getJson(data) {
-
+  
       // Get the size of an object
       var size = Object.size(data.features);
 
@@ -276,15 +285,15 @@ function stylefunc(feature){
 
 L.mapbox.accessToken = 'pk.eyJ1Ijoic3RhdGVjb2RlbW9nIiwiYSI6Ikp0Sk1tSmsifQ.hl44-VjKTJNEP5pgDFcFPg';
 
-/* Basemap Layers */  //not ideal because of double - labels
-var mbstyle = L.mapbox.tileLayer('statecodemog.aa380654', {
+/* Basemap Layers */ 
+var mbstyle = L.mapbox.tileLayer('statecodemog.d47df6dd', {
     'zIndex': 1
 });
 var mbsat = L.mapbox.tileLayer('statecodemog.km7i3g01');
 
 
 map = L.map("map", {
-  zoom: 10,
+  zoom: 12,
   center: [40, -104.979378],
   layers: [mbstyle],
   minZoom: 6,
@@ -292,7 +301,7 @@ map = L.map("map", {
   zoomControl: false,
   attributionControl: false
 });
-
+  
 
 
 //define labels layer
@@ -301,10 +310,6 @@ var mblabels = L.mapbox.tileLayer('statecodemog.798453f5', {
     'zIndex': 100
 });
 
-//create map sandwich
-var topPane = map._createPane('leaflet-top-pane', map.getPanes().mapPane);
-var topLayer = mblabels.addTo(map);
-topPane.appendChild(topLayer.getContainer());
 
 
 var LeafletFilterControl = L.control.command({postion: 'topleft'});
@@ -388,12 +393,59 @@ var layerControl = L.control.groupedLayers(baseLayers, {}, {
   collapsed: isCollapsed
 }).addTo(map);
 
-/* Prevent hitting enter from refreshing the page 
-$("#searchbox").keypress(function (e) {
-  if (e.which == 13) {
-    e.preventDefault();
-  }
-});*/
+
+//sweet geocoder control : https://github.com/perliedman/leaflet-control-geocoder, modified to use my MapBox
+    var geocoders = {
+            'Mapbox': L.Control.Geocoder.mapbox(L.mapbox.accessToken)
+        },
+        selector = L.DomUtil.get('geocode-selector'),
+        control = new L.Control.Geocoder({ geocoder: null }),
+        btn,
+        selection,
+        marker;
+
+    function select(geocoder, el) {
+        if (selection) {
+            L.DomUtil.removeClass(selection, 'selected');
+        }
+
+        control.options.geocoder = geocoder;
+        L.DomUtil.addClass(el, 'selected');
+        selection = el;
+    }
+
+    for (var name in geocoders) {
+        btn = L.DomUtil.create('button', 'leaflet-bar', selector);
+        btn.innerHTML = name;
+        (function(n) {
+            L.DomEvent.addListener(btn, 'click', function() {
+                select(geocoders[n], this);
+            }, btn);
+        })(name);
+
+        if (!selection) {
+            select(geocoders[name], btn);
+        }
+    }
+
+
+    control.addTo(map);
+
+
+/* Prevent clicking from influencing map */
+$(".leaflet-control-command").dblclick(function (e) {
+ e.stopPropagation();
+});
+/* Prevent clicking from influencing map */
+$(".leaflet-control-command").click(function (e) {
+ e.stopPropagation();
+});
+
+/* Prevent clicking from influencing map */
+$(".leaflet-control-command").mousemove(function (e) {
+ e.stopPropagation();
+});
+
 
 // Leaflet patch to make layer control scrollable on touch browsers
 var container = $(".leaflet-control-layers")[0];
@@ -425,61 +477,9 @@ var substringMatcher = function(strs) {
 };
 
 
-//BELOW FOR TYPEAHEAD Main Search
-{
-/* Highlight search box text on click */
-$("#the-basics").click(function () {
-  $(this).select();
-});
-
- $("#searchbox").click(function () {
-  $(this).select();
-});
-
-$('#the-basics .typeahead').typeahead({ hint: true,  highlight: true,  minLength: 4},{
-  name: 'locations',
-  displayKey: 'value',
-  source: substringMatcher(locations)
-});
-	
-$('#the-basics .typeahead').on('typeahead:selected', function (e, datum) { searchresult(datum); }).on('typeahead:autocompleted', function (e, datum) {	searchresult(datum);});	
-	
-$("#the-basics").on('keyup', function(e){
-    if(e.which == 13) {
-        $(".tt-suggestion:first-child", this).trigger('click');
-    }
-});
-}
-
-function searchresult(result){
-  
-  var id= result.value;
-  var strbb;
-  var southWest, northEast;
-  var bounds;
-  
-  for(var i in bbox){
-    if(bbox[i].id===id){strbb=bbox[i].bb;}
-    }
-
-    bbarray=strbb.split(',');
-    southWest = new L.LatLng(bbarray[1], bbarray[0]);
-    northEast = new L.LatLng(bbarray[3], bbarray[2]);
-    bounds = new L.LatLngBounds(southWest, northEast);
-    map.fitBounds(bounds);
-  
-}
               
 //Typeahead (Name or ID Search)
 {
-  //does this set focus to the element?
-$("#opt2div").click(function () {
-  $(this).select();
-});
-
- $("#slgid").click(function () {
-  $(this).select();
-});
 
 $('#opt2div .typeahead').typeahead({ hint: true,  highlight: true,  minLength: 4},{
   name: 'districtsonly',
@@ -487,17 +487,15 @@ $('#opt2div .typeahead').typeahead({ hint: true,  highlight: true,  minLength: 4
   source: substringMatcher(districtsonly)
 });
 	
-$('#opt2div .typeahead').on('typeahead:selected', function (e, datum) { searchresult2(datum); }).on('typeahead:autocompleted', function (e, datum) {	searchresult2(datum);});	
+$('#opt2div .typeahead').on('typeahead:select', function (e, datum) { searchresult(datum); }).on('typeahead:autocomplete', function (e, datum) {	searchresult(datum);});	
 	
-
-$("#opt2div").on('keyup', function(e){
-    if(e.which == 13) {
-        $(".tt-suggestion:first-child", this).trigger('click');
-    }
+$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
+  console.log('Selection: ' + suggestion);
 });
+  
 }
   
-function searchresult2(result){
+function searchresult(result){
   
   var id= result.value;
   var strbb;
@@ -694,14 +692,30 @@ function onEachFeature(feature, layer) {
        }
        
            if (feature.properties) {
+             var addurl="";
+             var abbrevname="";
+             var prevname="";
+             
+             if(feature.properties.url){
+               addurl="<tr><th>URL</th><td>" + feature.properties.url + "</td></tr>";
+             }
+             if(feature.properties.abbrev_name){
+               abbrevname="<tr><th>Short Name</th><td>" + feature.properties.abbrev_name + "</td></tr>";
+             }             
+             if(feature.properties.prev_name){
+               prevname="<tr><th>Previous Name</th><td>" + feature.properties.prev_name + "</td></tr>";
+             }               
 
-         var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + feature.properties.lgid + "</td></tr>" + "<tr><th>Type</th><td>" + typelookup(feature.properties.lgtypeid) + "</td></tr><tr><th>Status</th><td>" + statuslookup(feature.properties.lgstatusid) + "</td></tr>" + "<tr><th>Source</th><td>" + feature.properties.source + "</td></tr>" + "<table><br />";
-                 var title=feature.properties.lgname;
+         var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + feature.properties.lgid + "</td></tr>" + "<tr><th>Type</th><td>" + typelookup(feature.properties.lgtypeid) + "</td></tr><tr><th>Status</th><td>" + statuslookup(feature.properties.lgstatusid) + "</td></tr>" + addurl  + abbrevname + prevname + "</table><br />";
+             
+             
+          var title=feature.properties.lgname;
       layer.on({
         click: function (e) {
           $("#feature-title").html(title);
           $("#feature-info").html(content);
-          
+          $("#levy").html(content);
+          $("#contact").html(content);          
           // other tab information
           
           // other tab information
@@ -720,6 +734,16 @@ function onEachFeature(feature, layer) {
 //on dom loaded
 $(document).ready(function() {
   
+  
+  //dropdown suggestions default to hidden.  
+  $('.tt-menu').css("visibility", "hidden");
+
+  //if textbox is cleared, dropdown suggestions become hidden again
+$('#slgid').on('input', function() {
+  if($('#slgid').val()==""){$('.tt-menu').css("visibility", "hidden");}else{$('.tt-menu').css("visibility", "visible");}
+  
+});
+
       //initialize geojsonLayer
     geojsonLayer = L.geoJson.ajax("", {
         middleware: function(data) {

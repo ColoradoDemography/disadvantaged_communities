@@ -13,10 +13,12 @@
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/leafletv08/leaflet.css">
-    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.css' rel='stylesheet' />
+
+    <link rel="stylesheet" href="assets/css/Control.Geocoder.css" />
     <link rel="stylesheet" href="//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css">
     <link rel="stylesheet" href="assets/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.css">
+        <link rel="stylesheet" href="assets/leafletv08/leaflet.css">
+    <link href='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.css' rel='stylesheet' />
     <link rel="stylesheet" href="assets/css/app.css">
 
     <link rel="apple-touch-icon" sizes="76x76" href="assets/img/favicon-76.png">
@@ -24,6 +26,35 @@
     <link rel="apple-touch-icon" sizes="152x152" href="assets/img/favicon-152.png">
     <link rel="icon" sizes="196x196" href="assets/img/favicon-196.png">
     <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+    
+    
+    <!-- somewhere the default popup style got currupted.  workaround -->
+    <style>
+.leaflet-popup-content-wrapper {
+  background:#2c3e50;
+  color:#fff;
+  font-size:16px;
+  line-height:24px;
+  opacity: 0.9;
+  }
+.leaflet-popup-content-wrapper a {
+  color:rgba(255,255,255,0.5);
+  }
+.leaflet-popup-tip-container {
+  width:0px;
+  height:0px;
+  }
+.leaflet-popup-tip {
+  border-left:0px solid transparent;
+  border-right:0px solid transparent;
+  border-top:0px solid #2c3e50;
+  }
+      
+      
+      .tt-menu {display: block !important;}
+      
+    </style>
+    
   </head>
 
   <body>
@@ -40,18 +71,6 @@
           <a class="navbar-brand" href="#">Colorado Special Districts</a>
         </div>
         <div class="navbar-collapse collapse">
-                  <form class="navbar-form navbar-right" id="adjustr" role="search">
-          <div id="the-basics"  class="form-group has-feedback navbar-right">
-              <input id="searchbox" type="text" placeholder="Search" class="form-control typeahead">
-              <span id="searchicon" class="fa fa-search form-control-feedback"></span>
-          </div>
-        </form>
-      <!--    <form class="navbar-form navbar-right" role="search">
-            <div class="form-group has-feedback">
-                <input id="searchbox" type="text" placeholder="Search" class="form-control">
-                <span id="searchicon" class="fa fa-search form-control-feedback"></span>
-            </div>
-          </form>-->
           <ul class="nav navbar-nav">
             <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="about-btn"><i class="fa fa-question-circle white"></i>&nbsp;&nbsp;About</a></li>
 
@@ -125,7 +144,7 @@
 <ul class="nav nav-tabs" id="tabContent">
   <li class="active"><a href="#feature-info" data-toggle="tab">Basic</a>
   </li>
-  <li><a href="#detailed" data-toggle="tab">Detailed</a>
+  <li><a href="#detailed" data-toggle="tab">Levy</a>
   </li>
   <li><a href="#contact" data-toggle="tab">Contact</a>
   </li>
@@ -135,7 +154,7 @@
   <div class="tab-pane active" id="feature-info">
   </div>
 
-  <div class="tab-pane" id="detailed">
+  <div class="tab-pane" id="levy">
     <br />
     content 0 3434
     <br /><br />
@@ -155,16 +174,15 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-
+    </div>
+    
     <div class="modal fade" id="attributionModal" tabindex="-1" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title">
-             Sources
-            </h4>
-          </div>
+<div class="modal-header">
+<button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+<h4 class="modal-title">Sources</h4>
+</div> <!-- end class modal header -->
           <div class="modal-body">
             <div id="attribution">
             <p><b>Bootleaf</b> Template developed by <a href="http://bryanmcbride.com/" target="_blank">Bryan McBride</a>.  (<a href="http://bmcbride.github.io/bootleaf/" target="_blank">Bootleaf Github</a>). License: <a href="https://raw.githubusercontent.com/bmcbride/bootleaf/master/LICENSE.txt" target="_blank">MIT</a></p>
@@ -176,22 +194,25 @@
               <p><b>Leaflet Locate Control</b> created by <a href="http://domoritz.de/" target="_blank">Dominik Moritz</a>.  (<a href="https://github.com/domoritz/leaflet-locatecontrol" target="_blank">Locate Control Github</a>). License: <a href="https://github.com/domoritz/leaflet-locatecontrol/blob/gh-pages/LICENSE" target="_blank">MIT</a></p>
               <p><b>Leaflet Grouped Layer Control</b> created by <a href="https://medium.com/@ismyrnow" target="_blank">Ishmael Smyrnow</a>.  (<a href="https://github.com/ismyrnow/Leaflet.groupedlayercontrol" target="_blank">Grouped Layer Control Github</a>). License: <a href="https://github.com/ismyrnow/Leaflet.groupedlayercontrol/blob/gh-pages/MIT-LICENSE.txt" target="_blank">MIT</a></p>
              <p><b>Leaflet Ajax</b> created by <a href="http://calvinmetcalf.com/" target="_blank">Calvin Metcalf</a>.  (<a href="https://github.com/calvinmetcalf/leaflet-ajax" target="_blank">Leaflet Ajax Github</a>).  <a href="https://raw.githubusercontent.com/calvinmetcalf/leaflet-ajax/master/license.md" target="_blank">License</a></p>
-            </div>
-          </div>
+             <p><b>Leaflet Control Geocoder</b> created by <a href="http://www.liedman.net/" target="_blank">Per Liedman</a>.  (<a href="https://github.com/perliedman/leaflet-control-geocoder" target="_blank">Leaflet Control Geocoder Github</a>).  <a href="https://raw.githubusercontent.com/perliedman/leaflet-control-geocoder/master/LICENSE" target="_blank">License</a></p>
+            </div> <!-- end attribution div-->
+            </div> <!-- end modal body -->
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="assets/js/typeahead.jquery.js"></script>    
     <script src="assets/js/bbox.js"></script>	<!-- searchbox data -->
 
     <script src="assets/leafletv08/leaflet.js"></script>
-    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.js'></script>
+      <script src='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.js'></script>
      <script src="assets/leafletajax/la.test.js"></script>
     <script src="//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js"></script>
     <script src="assets/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js"></script>
+      <script src="assets/js/Control.Geocoder.js"></script>
     <script src="assets/js/app.js"></script>
   </body>
 </html>

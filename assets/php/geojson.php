@@ -32,8 +32,8 @@ function make_safe($string) {
 
 $db ='dola';
 $schema='bounds';
-$tname='polished';
-$limit=100;  //by default limits to 100 search results.  override by setting limit= in GET string
+$tname='districts';
+$limit=1000;  //by default limits to 1000 search results.  override by setting limit= in GET string
 if (isset($_GET['limit'])){$limit = make_safe($_GET['limit']);}
 
 $activearray=[];
@@ -149,9 +149,9 @@ $sql = "SELECT lgid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape
 */
 
 if (isset($_GET['lgid'])){
-$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from ".$schema.".".$tname." natural join ".$schema.".lgbasic ".$lgidstr.";";
+$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, mail_address, alt_address, mail_city, mail_state, mail_zip, url, prev_name, abbrev_name, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from ".$schema.".".$tname." natural join ".$schema.".lgbasic ".$lgidstr.";";
 }else{
-$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from ".$schema.".".$tname." natural join ".$schema.".lgbasic where ".$bbstr.$activestr.$filterstr." limit $limit;";
+$sql = "SELECT lgid, lgname, lgtypeid, lgstatusid, source, mail_address, alt_address, mail_city, mail_state, mail_zip, url, prev_name, abbrev_name, st_asgeojson(st_transform(ST_Simplify(" . pg_escape_string('geom') . ",".$tolerance."),4326)) AS geojson from ".$schema.".".$tname." natural join ".$schema.".lgbasic where ".$bbstr.$activestr.$filterstr." limit $limit;";
 }
 
   
