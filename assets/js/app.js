@@ -676,6 +676,7 @@ function onEachFeature(feature, layer) {
          
        }
  
+  
               
        function statuslookup(district){
          
@@ -707,15 +708,37 @@ function onEachFeature(feature, layer) {
              }               
 
          var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + feature.properties.lgid + "</td></tr>" + "<tr><th>Type</th><td>" + typelookup(feature.properties.lgtypeid) + "</td></tr><tr><th>Status</th><td>" + statuslookup(feature.properties.lgstatusid) + "</td></tr>" + addurl  + abbrevname + prevname + "</table><br />";
+             var altaddress="";
+             
+             if(feature.properties.alt_address){
+               altaddress="<tr><th>Alt Address</th><td>" + feature.properties.alt_address + "</td></tr>";
+             }       
+             
+             var contact = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Mail Address</th><td>" + feature.properties.mail_address + "</td></tr>" + altaddress + "<tr><th>City</th><td>" + feature.properties.mail_city + "</td></tr><tr><th>State</th><td>" + feature.properties.mail_state + "</td></tr><tr><th>Zip</th><td>" + feature.properties.mail_zip + "</td></tr></table><br />";
              
              
           var title=feature.properties.lgname;
+             
+             var detailed="<br /><table class='table table-striped table-bordered table-condensed'><tr><th>Year</th><th>County</th><th>Subdistrict</th><th>Assessed Value</th><th>Levy</th></tr>";
+             
+          for(var i=0;i<limlevy.length;i=i+1){
+            if(limlevy[i].LG_ID==feature.properties.lgid){
+              if(limlevy[i].ASSESSED_VALUE!=="0"){detailed = detailed + "<tr><td>"+limlevy[i].BUDGET_YEAR+"</td><td>"+clookup(limlevy[i].COUNTY)+"</td><td>"+limlevy[i].SUBDIST_NUM+"</td><td>$"+commafy(limlevy[i].ASSESSED_VALUE)+"</td><td>"+limlevy[i].TOTAL_LEVY+"</td></tr>";}
+            }
+          }
+             
+             detailed = detailed + "</table><br />"
+ 
+             var newlink="https://dola.colorado.gov/dlg_portal/filings.jsf?id="+feature.properties.lgid;
+             
       layer.on({
         click: function (e) {
           $("#feature-title").html(title);
           $("#feature-info").html(content);
-          $("#levy").html(content);
-          $("#contact").html(content);          
+          $("#detailed").html(detailed);
+          $("#contact").html(contact);    
+          $('#dolalink').attr('href',newlink);
+
           // other tab information
           
           // other tab information
@@ -730,6 +753,87 @@ function onEachFeature(feature, layer) {
   
 }
 
+function commafy(nStr) {
+	var x, x1, x2, rgx;
+	nStr += '';
+	x = nStr.split('.');
+	x1 = x[0];
+	x2 = x.length > 1 ? '.' + x[1] : '';
+	rgx = /(\d+)(\d{3})/;
+	while (rgx.test(x1)) {
+		x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	}
+	return x1 + x2;
+}
+
+function clookup(ccode){
+  
+  if(ccode=="001"){return 'Adams'};
+  if(ccode=="003"){return 'Alamosa'};
+  if(ccode=="005"){return 'Arapahoe'};
+  if(ccode=="007"){return 'Archuleta'};
+  if(ccode=="009"){return 'Baca'};
+  if(ccode=="011"){return 'Bent'};
+  if(ccode=="013"){return 'Boulder'};
+  if(ccode=="014"){return 'Broomfield'};  
+  if(ccode=="015"){return 'Chaffee'};
+  if(ccode=="017"){return 'Cheyenne'};  
+  if(ccode=="019"){return 'Clear Creek'};
+  if(ccode=="021"){return 'Conejos'};
+  if(ccode=="023"){return 'Costilla'};
+  if(ccode=="025"){return 'Crowley'};
+  if(ccode=="027"){return 'Custer'};
+  if(ccode=="029"){return 'Delta'};
+  if(ccode=="031"){return 'Denver'};
+  if(ccode=="033"){return 'Dolores'};  
+  if(ccode=="035"){return 'Douglas'};
+  if(ccode=="037"){return 'Eagle'};    
+  if(ccode=="039"){return 'Elbert'};
+  if(ccode=="041"){return 'El Paso'};
+  if(ccode=="043"){return 'Fremont'};
+  if(ccode=="045"){return 'Garfield'};
+  if(ccode=="047"){return 'Gilpin'};
+  if(ccode=="049"){return 'Grand'};
+  if(ccode=="051"){return 'Gunnison'};
+  if(ccode=="053"){return 'Hinsdale'};  
+  if(ccode=="055"){return 'Huerfano'};
+  if(ccode=="057"){return 'Jackson'};    
+  if(ccode=="059"){return 'Jefferson'};
+  if(ccode=="061"){return 'Kiowa'};
+  if(ccode=="063"){return 'Kit Carson'};
+  if(ccode=="065"){return 'Lake'};
+  if(ccode=="067"){return 'La Plata'};
+  if(ccode=="069"){return 'Larimer'};
+  if(ccode=="071"){return 'Las Animas'};
+  if(ccode=="073"){return 'Lincoln'};  
+  if(ccode=="075"){return 'Logan'};
+  if(ccode=="077"){return 'Mesa'};    
+  if(ccode=="079"){return 'Mineral'};
+  if(ccode=="081"){return 'Moffat'};
+  if(ccode=="083"){return 'Montezuma'};
+  if(ccode=="085"){return 'Montrose'};
+  if(ccode=="087"){return 'Morgan'};
+  if(ccode=="089"){return 'Otero'};
+  if(ccode=="091"){return 'Ouray'};
+  if(ccode=="093"){return 'Park'};  
+  if(ccode=="095"){return 'Phillips'};
+  if(ccode=="097"){return 'Pitkin'};  
+  if(ccode=="099"){return 'Prowers'};
+  if(ccode=="101"){return 'Pueblo'};
+  if(ccode=="103"){return 'Rio Blanco'};
+  if(ccode=="105"){return 'Rio Grande'};
+  if(ccode=="107"){return 'Routt'};
+  if(ccode=="109"){return 'Saguache'};
+  if(ccode=="111"){return 'San Juan'};
+  if(ccode=="113"){return 'San Miguel'};  
+  if(ccode=="115"){return 'Sedgwick'};
+  if(ccode=="117"){return 'Summit'};  
+  if(ccode=="119"){return 'Teller'};
+  if(ccode=="121"){return 'Washington'};  
+  if(ccode=="123"){return 'Weld'};
+  if(ccode=="125"){return 'Yuma'};    
+
+}
 
 //on dom loaded
 $(document).ready(function() {
