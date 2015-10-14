@@ -5,7 +5,7 @@
 //lgbasic table in postgres dola.bounds.lgbasic - use script: _ConnectOracle/lgbasic.php (on lajavaas) to create JSON.  use script: _ConnectOracle/lgbasic.php to load into Postgres
 //lg2cnty table in postgres dola.bounds.lg2cnty - use script: _ConnectOracle/lg2cnty.php (on lajavaas) to create JSON.  use script: _ConnectOracle/lg2cnty.php to load into Postgres
 
-//districts (currently test_rp) table in dola.bounds.lgbasic - as needed when district boundaries change
+//districts table in dola.bounds - as needed when district boundaries change
 
 //export counties from TIGER, munis from TIGER (because TIGER has places), Districts Shapefile from DOLA - create geojson files (remember WGS84), feed to getLatLng.html
 //  - - - - remember to rename county name and muni name fields to lgname so that getLatLng.html can work with it
@@ -13,10 +13,25 @@
 
 
 
+
+//get limlevy data -- dont do anything else until then
+
+//     var limlevy;
+
+// $.getJSON("http://54.69.15.55/data/limlevy.json", function(json) {
+//   limlevy = json;
+//   init();
+// });
+
+init();
+
+function init(){
+
+
 var map, globalbusy, geojsonLayer, lastzoom, active='1', filter='6', limit=1000, lgid="";
 //active = whether to show inactive districts.  Active=0 : show all, including inactive.  Active=1 : show only active
-//filter = comma delimited list of district lgtypes to show
-
+//filter = comma delimited list of district lgtypes to show  
+  
 //map bounds the last time the data was loaded
 var coord={};
 coord.nelat='';
@@ -187,10 +202,13 @@ $("#about-btn").click(function() {
   return false;
 });
 
-$("#nav-btn").click(function() {
-  $(".navbar-collapse").collapse("toggle");
+$("#about-btn").click(function() {
+  $("#aboutModal").modal("show");
+  $(".navbar-collapse.in").collapse("hide");
   return false;
-});
+});  
+  
+  
 
 function sizeLayerControl() {
   $(".leaflet-control-layers").css("max-height", $("#map").height() - 50);
@@ -927,3 +945,5 @@ $('#slgid').on('input', function() {
   ajaxcall();
   
 });
+  
+}
