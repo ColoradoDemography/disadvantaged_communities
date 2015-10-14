@@ -1,14 +1,11 @@
 
 //app moving pieces: To Update as Needed
 //------------------
-//bbox.js - created using getLatLng.html and JSON.stringify(locationsarray) in console - used for search bounding boxes
-//lgbasic table in postgres dola.bounds.lgbasic - use script: _ConnectOracle/lgbasic.php (on lajavaas) to create JSON.  use script: _ConnectOracle/lgbasic.php to load into Postgres
-//lg2cnty table in postgres dola.bounds.lg2cnty - use script: _ConnectOracle/lg2cnty.php (on lajavaas) to create JSON.  use script: _ConnectOracle/lg2cnty.php to load into Postgres
+
+//lgbasic table in postgres dola.bounds.lgbasic - use script: _connectOracle/lgbasic.php (on lajavaas) to create JSON.  use script: CO_FS_Data_PHP/load_lgbasic.php to load into Postgres
+//lg2cnty table in postgres dola.bounds.lg2cnty - use script: _connectOracle/lg2cnty.php (on lajavaas) to create JSON.  use script: CO_FS_Data_PHP/load_lg2cnty.php to load into Postgres
 
 //districts table in dola.bounds - as needed when district boundaries change
-
-//export counties from TIGER, munis from TIGER (because TIGER has places), Districts Shapefile from DOLA - create geojson files (remember WGS84), feed to getLatLng.html
-//  - - - - remember to rename county name and muni name fields to lgname so that getLatLng.html can work with it
 
 
 
@@ -16,14 +13,31 @@
 
 //get limlevy data -- dont do anything else until then
 
-//     var limlevy;
+ var limlevy;
+ var districtsonly=[];
+ var districtsbb=[];
 
-// $.getJSON("http://54.69.15.55/data/limlevy.json", function(json) {
-//   limlevy = json;
-//   init();
-// });
+//geocoder values
+$.getJSON("../CO_FS_Data_PHP/geopts.json", function(geopts) {
 
-init();
+  //create data objects for geocoder
+  for(i=0;i<geopts.length;i++){
+      districtsonly.push(geopts[i].lgid);
+      districtsonly.push(geopts[i].lgname)
+      districtsbb.push(geopts[i].bbox);
+      districtsbb.push(geopts[i].bbox);
+  }
+  
+  $.getJSON("https://dola.colorado.gov/gis-tmp/limlevy.json", function(json) {
+  limlevy = json;
+  init();
+    
+});
+});
+
+
+
+//init();
 
 function init(){
 
@@ -514,7 +528,7 @@ $('.typeahead').bind('typeahead:select', function(ev, suggestion) {
 }
   
 function searchresult(result){
-  
+  console.log(result);
   var id= result.value;
   var strbb;
   var southWest, northEast;
