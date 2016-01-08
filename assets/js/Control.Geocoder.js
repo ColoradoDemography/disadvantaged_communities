@@ -684,7 +684,7 @@
 	
 	L.Control.Geocoder.What3Words = L.Class.extend({
 		options: {
-			serviceUrl: 'http://api.what3words.com/'
+			serviceUrl: 'https://api.what3words.com/'
 		},
 
 		initialize: function(accessToken) {
