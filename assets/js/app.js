@@ -279,7 +279,7 @@ function init() {
         //we calculate a bounding box equal much larger than the actual visible map.  This preloades shapes that are off the map.  Combined with the center point query, this will allow us to not have to requery the database on every map movement.
         newbounds = (coord.swlng - diff2) + "," + (coord.swlat - diff1) + "," + (coord.nelng + diff2) + "," + (coord.nelat + diff1);
 
-        geojsonLayer.refresh("http://red-meteor-147235.nitrousapp.com:4567/districts?limit=" + limit + "&active=" + active + "&filter=" + filter + "&bb=" + newbounds + "&zoom=" + map.getZoom() + lgid); //add a new layer replacing whatever is there
+        geojsonLayer.refresh("https://gis.dola.colorado.gov/sd/districts?limit=" + limit + "&active=" + active + "&filter=" + filter + "&bb=" + newbounds + "&zoom=" + map.getZoom() + lgid); //add a new layer replacing whatever is there
 
     }
 
