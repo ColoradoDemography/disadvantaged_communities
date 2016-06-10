@@ -17,7 +17,7 @@ var districtsonly = [];
 var districtsbb = [];
 
 //geocoder values
-$.getJSON("../CO_FS_Data_PHP/geopts.json", function(geopts) {
+$.getJSON("https://storage.googleapis.com/co-publicdata/geopts.json", function(geopts) {
 
     //create data objects for geocoder
     for (i = 0; i < geopts.length; i++) {
@@ -279,7 +279,7 @@ function init() {
         //we calculate a bounding box equal much larger than the actual visible map.  This preloades shapes that are off the map.  Combined with the center point query, this will allow us to not have to requery the database on every map movement.
         newbounds = (coord.swlng - diff2) + "," + (coord.swlat - diff1) + "," + (coord.nelng + diff2) + "," + (coord.nelat + diff1);
 
-        geojsonLayer.refresh("assets/php/geojson.php?limit=" + limit + "&active=" + active + "&filter=" + filter + "&bb=" + newbounds + "&zoom=" + map.getZoom() + lgid); //add a new layer replacing whatever is there
+        geojsonLayer.refresh("http://red-meteor-147235.nitrousapp.com:4567/districts?limit=" + limit + "&active=" + active + "&filter=" + filter + "&bb=" + newbounds + "&zoom=" + map.getZoom() + lgid); //add a new layer replacing whatever is there
 
     }
 
@@ -447,7 +447,7 @@ var mapquestHYB = L.layerGroup([L.tileLayer("https://{s}.mqcdn.com/tiles/1.0.0/s
         });
         attributionControl.onAdd = function() {
             var div = L.DomUtil.create("div", "leaflet-control-attribution");
-            div.innerHTML = "<span class='hidden-xs'>Developed by: <a href='https://www.colorado.gov/demography'>Colorado State Demography Office</a></span><span class='spanhide'> | <a href='#' onclick='$(\"#attributionModal\").modal(\"show\"); return false;'>Sources</a></span>";
+            div.innerHTML = "<span class='hidden-xs'>Developed by: <a href='https://demography.dola.colorado.gov'>Colorado State Demography Office</a></span><span class='spanhide'> | <a href='#' onclick='$(\"#attributionModal\").modal(\"show\"); return false;'>Sources</a></span>";
             return div;
         };
         map.addControl(attributionControl);
