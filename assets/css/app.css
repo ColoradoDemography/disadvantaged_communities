@@ -278,3 +278,8 @@ input[type="radio"], input[type="checkbox"] {
 .tt-suggestion p {
   margin: 0;
 }
+
+
+div.label{
+  color: #000;
+}

@@ -412,7 +412,7 @@ var mapquestHYB = L.layerGroup([L.tileLayer("https://{s}.mqcdn.com/tiles/1.0.0/s
         attributionControl: false
     });
 
-
+var graphicScale = L.control.graphicScale().addTo(map);
 
     //define labels layer
     var mblabels = L.mapbox.tileLayer('statecodemog.798453f5', {
