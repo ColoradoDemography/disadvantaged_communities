@@ -502,9 +502,9 @@ var graphicScale = L.control.graphicScale().addTo(map);
     var baseLayers = {
         "Mapbox: Satellite": mbsat,
         "Mapbox: Contrast Base": mbstyle,
-        "Mapquest: Streets": mapquestOSM,
-        "Mapquest: Imagery": mapquestOAM,
-        "Mapquest: Hybrid": mapquestHYB,
+        //"Mapquest: Streets": mapquestOSM,
+        //"Mapquest: Imagery": mapquestOAM,
+        //"Mapquest: Hybrid": mapquestHYB,
         "ESRI: Streets": Esri_WorldStreetMap
     };
 
