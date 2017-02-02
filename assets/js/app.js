@@ -7,7 +7,7 @@
 //districts table in dola.bounds - as needed when district boundaries change
 
 
-
+/*global $*/
 
 
 //get limlevy data -- dont do anything else until then
@@ -34,7 +34,18 @@ $.getJSON("https://storage.googleapis.com/co-publicdata/geopts.json", function(g
     });
 });
 
-
+$(function() {
+    $("#feature-info.mhi").each(function(index) {
+        var scale = [['bad', 50000], ['neutral', 10000], ['good', 225000]];
+        var score = $(this).text();
+        console.log(score);
+        for (var i = 0; i < scale.length; i++) {
+            if (score <= scale[i][1]) {
+                $(this).addClass(scale[i][0]);
+            }
+        }
+    });
+});
 
 //init();
 
@@ -42,7 +53,7 @@ function init() {
 
 
     var map, globalbusy, geojsonLayer, lastzoom, active = '1',
-        filter = '6',
+        filter = 'county',
         limit = 1000,
         lgid = "";
     //active = whether to show inactive districts.  Active=0 : show all, including inactive.  Active=1 : show only active
@@ -69,38 +80,38 @@ function init() {
 
 
             var controlUI = L.DomUtil.create('div', 'leaflet-control-command-interior', controlDiv);
-            controlUI.title = 'Filter Districts';
+            controlUI.title = 'Census Geography';
             var textdiv = L.DomUtil.create('div', 'ctrldesc', controlUI);
             var divsec = L.DomUtil.create('b', 'titletext', textdiv);
-            divsec.innerHTML = 'Filter District by:&nbsp;&nbsp;&nbsp;&nbsp;';
+            divsec.innerHTML = 'Choose a Geography';
 
-            var y = L.DomUtil.create('input', '', textdiv);
-            y.setAttribute("type", "radio");
-            y.id = 'rtype';
-            y.name = "rad";
-            y.checked = true;
-            divsec.appendChild(y);
+            // var y = L.DomUtil.create('input', '', textdiv);
+            // y.setAttribute("type", "radio");
+            // y.id = 'rtype';
+            // y.name = "rad";
+            // y.checked = true;
+            // divsec.appendChild(y);
 
-            L.DomEvent
-                .addListener(y, 'change', L.DomEvent.stopPropagation)
-                .addListener(y, 'change', L.DomEvent.preventDefault)
-                .addListener(y, 'change', showhide);
+            // L.DomEvent
+            //     .addListener(y, 'change', L.DomEvent.stopPropagation)
+            //     .addListener(y, 'change', L.DomEvent.preventDefault)
+            //     .addListener(y, 'change', showhide);
 
-            divsec.appendChild(document.createTextNode(" Type "));
-            divsec.appendChild(document.createTextNode('\u00A0'));
+            // divsec.appendChild(document.createTextNode(" Type "));
+            // divsec.appendChild(document.createTextNode('\u00A0'));
 
-            var z = L.DomUtil.create('input', '', textdiv);
-            z.setAttribute("type", "radio");
-            z.id = 'rname';
-            z.name = "rad";
-            divsec.appendChild(z);
+            // var z = L.DomUtil.create('input', '', textdiv);
+            // z.setAttribute("type", "radio");
+            // z.id = 'rname';
+            // z.name = "rad";
+            // divsec.appendChild(z);
 
-            L.DomEvent
-                .addListener(z, 'change', L.DomEvent.stopPropagation)
-                .addListener(z, 'change', L.DomEvent.preventDefault)
-                .addListener(z, 'change', showhide);
+            // L.DomEvent
+            //     .addListener(z, 'change', L.DomEvent.stopPropagation)
+            //     .addListener(z, 'change', L.DomEvent.preventDefault)
+            //     .addListener(z, 'change', showhide);
 
-            divsec.appendChild(document.createTextNode(" Name or ID"));
+            // divsec.appendChild(document.createTextNode(" Name or ID"));
 
             var hrbreak = L.DomUtil.create('hr', '', controlUI);
             hrbreak.id = "hrcss";
@@ -117,7 +128,7 @@ function init() {
                 .addListener(selectUI, 'change', refilter);
 
             var option;
-            var inputdata = "Metropolitan Districts||Park & Recreation Districts||Fire Protection Districts||Hospital Districts||Water & Sanitation Districts||Library Districts||School Districts||Soil Conservation Districts||Cemetary Districts||Other Districts||All Districts";
+            var inputdata = "County||Place||Tract||Block Group";
 
             inputdata.split('||').forEach(function(item) {
                 option = document.createElement('option');
@@ -187,40 +198,21 @@ function init() {
         var districtfilter = $('.seldiv :selected').text();
 
         switch (districtfilter) {
-            case 'All Districts':
-                filter = "0";
+            case 'County':
+                //filter = "50";
+                filter = 'county';
                 break;
-            case 'Metropolitan Districts':
-                filter = "6";
+            case 'Place':
+                //filter = "160";
+                filter = 'place';
                 break;
-            case 'Park & Recreation Districts':
-                filter = "7";
+            case 'Tract':
+                //filter = "140";
+                filter = 'tract';
                 break;
-            case 'Fire Protection Districts':
-                filter = "8";
-                break;
-            case 'Hospital Districts':
-                filter = "9";
-                break;
-            case 'Water & Sanitation Districts':
-                filter = "10,11,12";
-                break;
-            case 'School Districts':
-                filter = "99";
-                break;
-            case 'Soil Conservation Districts':
-                filter = "20";
-                break;
-            case 'Cemetary Districts':
-                filter = "15";
-                break;
-            case 'Library Districts':
-                filter = "16";
-                break;
-
-
-            case 'Other Districts':
-                filter = "13,14,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,62,63,64,65,66,67,68,69,71,72,73,74,75,76,77,78,79,80,95,96,97,98";
+            case 'Block Group':
+                //filter = "150";
+                filter = 'bg';
                 break;
         }
 
@@ -279,7 +271,8 @@ function init() {
         //we calculate a bounding box equal much larger than the actual visible map.  This preloades shapes that are off the map.  Combined with the center point query, this will allow us to not have to requery the database on every map movement.
         newbounds = (coord.swlng - diff2) + "," + (coord.swlat - diff1) + "," + (coord.nelng + diff2) + "," + (coord.nelat + diff1);
 
-        geojsonLayer.refresh("https://gis.dola.colorado.gov/sd/districts?limit=" + limit + "&active=" + active + "&filter=" + filter + "&bb=" + newbounds + "&zoom=" + map.getZoom() + lgid); //add a new layer replacing whatever is there
+        //geojsonLayer.refresh("https://gis.dola.colorado.gov/capi/geojson?limit=99999&db=acs1115&schema=data&table=b19013&sumlev=" + filter + "&type=json&state=8"); //add a new layer replacing whatever is there
+        geojsonLayer.refresh("/assets/data/srf_acs_" + filter + ".geojson")
 
     }
 
@@ -319,7 +312,7 @@ function init() {
     function stylefunc(feature) {
 
         var typical = {
-            color: "black",
+            color: "blue",
             weight: 1,
             fill: true,
             opacity: 1,
@@ -329,38 +322,23 @@ function init() {
         };
 
         //gets last digit of lgid.  colors shape per that digit (pseudo random color scheme)
-        switch ((feature.properties.lgid).toString().slice(-1)) {
-            case '0':
-                typical.color = "#5E5075";
-                return typical;
-            case '1':
-                typical.color = "#6DAF48";
-                return typical;
-            case '2':
-                typical.color = "#CD4A31";
-                return typical;
-            case '3':
-                typical.color = "#B25BD2";
-                return typical;
-            case '4':
-                typical.color = "#51A19E";
-                return typical;
-            case '5':
-                typical.color = "#BD8A39";
-                return typical;
-            case '6':
-                typical.color = "#506330";
-                return typical;
-            case '7':
-                typical.color = "#C75293";
-                return typical;
-            case '8':
-                typical.color = "#A95155";
-                return typical;
-            case '9':
-                typical.color = "#8289CC";
-                return typical;
-        }
+        //console.log(feature.properties);
+        // var districtfilter = $('.seldiv :selected').text();
+        
+        // switch (districtfilter) {
+        //     case 'County':
+        //         typical.color = "#5E5075";
+        //         return typical;
+        //     case 'Place':
+        //         typical.color = "#6DAF48";
+        //         return typical;
+        //     case 'Tract':
+        //         typical.color = "#CD4A31";
+        //         return typical;
+        //     case 'Block Group':
+        //         typical.color = "#B25BD2";
+        //         return typical;
+        // }
 
         return typical;
 
@@ -403,11 +381,11 @@ var mapquestHYB = L.layerGroup([L.tileLayer("https://{s}.mqcdn.com/tiles/1.0.0/s
     });
 
     map = L.map("map", {
-        zoom: 12,
-        center: [40, -104.979378],
+        zoom: 8,
+        center: [39, -105.5],
         layers: [mbstyle],
         minZoom: 6,
-        maxZoom: 16,
+        maxZoom: 18,
         zoomControl: false,
         attributionControl: false
     });
@@ -690,7 +668,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
         layer.setStyle({
             opacity: 1,
             weight: 2,
-            color: 'black'
+            color: 'yellow'
         });
 
 
@@ -712,7 +690,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
 
         // Insert a headline into that popup
         hed = $("<div></div>", {
-            text: fp.lgname,
+            text: fp.geoname,
             css: {
                 fontSize: "16px",
                 marginBottom: "3px"
@@ -725,200 +703,203 @@ var graphicScale = L.control.graphicScale().addTo(map);
 
     }
 
+    
+    
     function onEachFeature(feature, layer) {
 
+        // function typelookup(district) {
 
+        //     switch (district) {
+        //         case '6':
+        //             return "Metropolitan District";
+        //         case '7':
+        //             return "Park & Recreation District";
+        //         case '8':
+        //             return "Fire Protection District";
+        //         case '9':
+        //             return "Health Service District (Hospital District)";
+        //         case '10':
+        //             return "Sanitation District";
+        //         case '11':
+        //             return "Water District";
+        //         case '12':
+        //             return "Water & Sanitation District";
+        //         case '13':
+        //             return "County Recreation District";
+        //         case '14':
+        //             return "Metropolitan Sewage Disposal District";
+        //         case '15':
+        //             return "Cemetery District";
+        //         case '16':
+        //             return "Library District";
+        //         case '17':
+        //             return "Ground Water Management District";
+        //         case '18':
+        //             return "Water Conservancy District";
+        //         case '19':
+        //             return "County Pest Control District";
+        //         case '20':
+        //             return "Conservation District (Soil)";
+        //         case '21':
+        //             return "Metropolitan Water District";
+        //         case '22':
+        //             return "Irrigation District (Irrigation Drainage)";
+        //         case '23':
+        //             return "Junior College District";
+        //         case '24':
+        //             return "Law Enforcement Authority";
+        //         case '25':
+        //             return "Drainage District";
+        //         case '26':
+        //             return "Downtown Development Authority";
+        //         case '27':
+        //             return "Urban Renewal Authority";
+        //         case '28':
+        //             return "General Improvement District (Municipal)";
+        //         case '29':
+        //             return "Special Improvement District (Municipal, Incl. Storm Sewer)";
+        //         case '30':
+        //             return "Local Improvement District (County)";
+        //         case '31':
+        //             return "Public Improvement District (County)";
+        //         case '32':
+        //             return "County Housing Authority";
+        //         case '33':
+        //             return "County Disposal District";
+        //         case '34':
+        //             return "Power Authority";
+        //         case '35':
+        //             return "Water Authority";
+        //         case '36':
+        //             return "Moffat Tunnel Authority";
+        //         case '37':
+        //             return "Regional Transportation District";
+        //         case '38':
+        //             return "Colorado Travel And Tourism Authority";
+        //         case '39':
+        //             return "Urban Drainage & Flood Control District";
+        //         case '40':
+        //             return "Internal Improvement District (Flood Control)";
+        //         case '41':
+        //             return "Airport Authority";
+        //         case '42':
+        //             return "Tunnel District";
+        //         case '43':
+        //             return "Conservancy District (Flood Control)";
+        //         case '44':
+        //             return "Grand Valley Drainage District";
+        //         case '45':
+        //             return "Ambulance District";
+        //         case '46':
+        //             return "Housing Authority (Municipal)";
+        //         case '47':
+        //             return "Authority (Intergovernmental Contract)";
+        //         case '48':
+        //             return "Rail District";
+        //         case '49':
+        //             return "Recreation Facility District";
+        //         case '50':
+        //             return "County Water & Sanitation Facility";
+        //         case '51':
+        //             return "Conservation District (River Water)";
+        //         case '52':
+        //             return "Denver Metropolitan Scientific & Cultural Facilities District";
+        //         case '53':
+        //             return "Scientific & Cultural Facilities District";
+        //         case '54':
+        //             return "Mine Drainage District";
+        //         case '55':
+        //             return "Public Highway Authority";
+        //         case '56':
+        //             return "Cherry Creek Basin Water Quality Authority";
+        //         case '57':
+        //             return "Business Improvement District";
+        //         case '58':
+        //             return "Regional Service Authority";
+        //         case '59':
+        //             return "Special Taxing District of Home Rule County";
+        //         case '60':
+        //             return "Emergency Telephone Service (911 Authority)";
 
-        function typelookup(district) {
+        //         case '62':
+        //             return "University Of Colorado Hospital Authority";
+        //         case '63':
+        //             return "Denver Metropolitan Major League Baseball Stadium District";
+        //         case '64':
+        //             return "Regional Transportation Authority";
+        //         case '65':
+        //             return "Pueblo Depot Activity Development Authority";
+        //         case '66':
+        //             return "Colorado Intermountain Fixed Guideway Authority";
+        //         case '67':
+        //             return "Metropolitan Football Stadium District";
+        //         case '68':
+        //             return "Denver Health And Hospital Authority";
+        //         case '69':
+        //             return "Multijurisdictional Housing Authority";
 
-            switch (district) {
-                case '6':
-                    return "Metropolitan District";
-                case '7':
-                    return "Park & Recreation District";
-                case '8':
-                    return "Fire Protection District";
-                case '9':
-                    return "Health Service District (Hospital District)";
-                case '10':
-                    return "Sanitation District";
-                case '11':
-                    return "Water District";
-                case '12':
-                    return "Water & Sanitation District";
-                case '13':
-                    return "County Recreation District";
-                case '14':
-                    return "Metropolitan Sewage Disposal District";
-                case '15':
-                    return "Cemetery District";
-                case '16':
-                    return "Library District";
-                case '17':
-                    return "Ground Water Management District";
-                case '18':
-                    return "Water Conservancy District";
-                case '19':
-                    return "County Pest Control District";
-                case '20':
-                    return "Conservation District (Soil)";
-                case '21':
-                    return "Metropolitan Water District";
-                case '22':
-                    return "Irrigation District (Irrigation Drainage)";
-                case '23':
-                    return "Junior College District";
-                case '24':
-                    return "Law Enforcement Authority";
-                case '25':
-                    return "Drainage District";
-                case '26':
-                    return "Downtown Development Authority";
-                case '27':
-                    return "Urban Renewal Authority";
-                case '28':
-                    return "General Improvement District (Municipal)";
-                case '29':
-                    return "Special Improvement District (Municipal, Incl. Storm Sewer)";
-                case '30':
-                    return "Local Improvement District (County)";
-                case '31':
-                    return "Public Improvement District (County)";
-                case '32':
-                    return "County Housing Authority";
-                case '33':
-                    return "County Disposal District";
-                case '34':
-                    return "Power Authority";
-                case '35':
-                    return "Water Authority";
-                case '36':
-                    return "Moffat Tunnel Authority";
-                case '37':
-                    return "Regional Transportation District";
-                case '38':
-                    return "Colorado Travel And Tourism Authority";
-                case '39':
-                    return "Urban Drainage & Flood Control District";
-                case '40':
-                    return "Internal Improvement District (Flood Control)";
-                case '41':
-                    return "Airport Authority";
-                case '42':
-                    return "Tunnel District";
-                case '43':
-                    return "Conservancy District (Flood Control)";
-                case '44':
-                    return "Grand Valley Drainage District";
-                case '45':
-                    return "Ambulance District";
-                case '46':
-                    return "Housing Authority (Municipal)";
-                case '47':
-                    return "Authority (Intergovernmental Contract)";
-                case '48':
-                    return "Rail District";
-                case '49':
-                    return "Recreation Facility District";
-                case '50':
-                    return "County Water & Sanitation Facility";
-                case '51':
-                    return "Conservation District (River Water)";
-                case '52':
-                    return "Denver Metropolitan Scientific & Cultural Facilities District";
-                case '53':
-                    return "Scientific & Cultural Facilities District";
-                case '54':
-                    return "Mine Drainage District";
-                case '55':
-                    return "Public Highway Authority";
-                case '56':
-                    return "Cherry Creek Basin Water Quality Authority";
-                case '57':
-                    return "Business Improvement District";
-                case '58':
-                    return "Regional Service Authority";
-                case '59':
-                    return "Special Taxing District of Home Rule County";
-                case '60':
-                    return "Emergency Telephone Service (911 Authority)";
+        //         case '71':
+        //             return "Local Marketing District";
+        //         case '72':
+        //             return "Special Taxing District of Home Rule Municipality";
+        //         case '73':
+        //             return "Health Assurance District";
+        //         case '74':
+        //             return "Mental Health Care Service District";
+        //         case '75':
+        //             return "Forest Improvement District";
+        //         case '76':
+        //             return "Fountain Creek Watershed, Flood Control, and Greenway District";
+        //         case '77':
+        //             return "Colorado New Energy Improvement District";
+        //         case '78':
+        //             return "Federal Mineral Lease District";
+        //         case '79':
+        //             return "Subdistrict of Special District";
+        //         case '80':
+        //             return "Special Improvement District (Title 32 Special District)";
 
-                case '62':
-                    return "University Of Colorado Hospital Authority";
-                case '63':
-                    return "Denver Metropolitan Major League Baseball Stadium District";
-                case '64':
-                    return "Regional Transportation Authority";
-                case '65':
-                    return "Pueblo Depot Activity Development Authority";
-                case '66':
-                    return "Colorado Intermountain Fixed Guideway Authority";
-                case '67':
-                    return "Metropolitan Football Stadium District";
-                case '68':
-                    return "Denver Health And Hospital Authority";
-                case '69':
-                    return "Multijurisdictional Housing Authority";
+        //         case '95':
+        //             return "Boards of Cooperative (Educational) Services (BOCES)";
+        //         case '96':
+        //             return "Tax Increment Finance (TIF) URA/DDA Plan Areas";
+        //         case '97':
+        //             return "Miscellaneous District";
+        //         case '98':
+        //             return "County Purpose";
+        //         case '99':
+        //             return "School District";
+        //     }
 
-                case '71':
-                    return "Local Marketing District";
-                case '72':
-                    return "Special Taxing District of Home Rule Municipality";
-                case '73':
-                    return "Health Assurance District";
-                case '74':
-                    return "Mental Health Care Service District";
-                case '75':
-                    return "Forest Improvement District";
-                case '76':
-                    return "Fountain Creek Watershed, Flood Control, and Greenway District";
-                case '77':
-                    return "Colorado New Energy Improvement District";
-                case '78':
-                    return "Federal Mineral Lease District";
-                case '79':
-                    return "Subdistrict of Special District";
-                case '80':
-                    return "Special Improvement District (Title 32 Special District)";
-
-                case '95':
-                    return "Boards of Cooperative (Educational) Services (BOCES)";
-                case '96':
-                    return "Tax Increment Finance (TIF) URA/DDA Plan Areas";
-                case '97':
-                    return "Miscellaneous District";
-                case '98':
-                    return "County Purpose";
-                case '99':
-                    return "School District";
-            }
-
-        }
+        // }
 
 
 
-        function statuslookup(district) {
+        // function statuslookup(district) {
 
-            switch (district) {
-                case '1':
-                    return "Active";
-                case '2':
-                    return "Consolidated";
-                case '3':
-                    return "Dissolved";
-                case '4':
-                    return "Multi-county";
-                case '5':
-                    return "Single-county";
-                case '6':
-                    return "Pending Formation";
-                case '7':
-                    return "Pending Dissolution";
-            }
+        //     switch (district) {
+        //         case '1':
+        //             return "Active";
+        //         case '2':
+        //             return "Consolidated";
+        //         case '3':
+        //             return "Dissolved";
+        //         case '4':
+        //             return "Multi-county";
+        //         case '5':
+        //             return "Single-county";
+        //         case '6':
+        //             return "Pending Formation";
+        //         case '7':
+        //             return "Pending Dissolution";
+        //     }
 
-        }
+        // }
+        
 
-        if (feature.properties) {
+
+
+        if (feature.properties){
             var addurl = "";
             var abbrevname = "";
             var prevname = "";
@@ -933,53 +914,130 @@ var graphicScale = L.control.graphicScale().addTo(map);
                 prevname = "<tr><th>Previous Name</th><td>" + feature.properties.prev_name + "</td></tr>";
             }
 
-            var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>ID</th><td>" + feature.properties.lgid + "</td></tr>" + "<tr><th>Type</th><td>" + typelookup(feature.properties.lgtypeid) + "</td></tr><tr><th>Status</th><td>" + statuslookup(feature.properties.lgstatusid) + "</td></tr>" + addurl + abbrevname + prevname + "</table><br />";
-            var altaddress = "";
+            var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Location</th><td>" + feature.properties.geoname + "</td></tr>"
+                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td></tr>"
+                        + "<tr><th>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td></tr>"
+                        + "<tr><th>MVI</th><td class='mvi'>" + feature.properties.b25077001 + "</td></tr><tr>"
+                        + "<th>MVI_MOE</th><td class='mvi_moe'>" + feature.properties.b25077_moe001 + "</td></tr>"
+                        + "<th>Jobs 2005</th><td>" + feature.properties.sdo_jobs_2005 + "</td></tr>"
+                        + "<th>Jobs 2015</th><td>" + feature.properties.sdo_jobs_2015 + "</td></tr>"
+                        + "<th>Jobs Change</th><td class='job_change'>" + feature.properties.sdo_job_change + "</td></tr>"
+                        + "</table><br />";
+            
+            // console.log(content);
+            // var altaddress = "";
 
-            if (feature.properties.alt_address) {
-                altaddress = "<tr><th>Alt Address</th><td>" + feature.properties.alt_address + "</td></tr>";
-            }
+            // if (feature.properties.alt_address) {
+            //     altaddress = "<tr><th>Alt Address</th><td>" + feature.properties.alt_address + "</td></tr>";
+            // }
 
-            var contact = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th>Mail Address</th><td>" + feature.properties.mail_address + "</td></tr>" + altaddress + "<tr><th>City</th><td>" + feature.properties.mail_city + "</td></tr><tr><th>State</th><td>" + feature.properties.mail_state + "</td></tr><tr><th>Zip</th><td>" + feature.properties.mail_zip + "</td></tr></table><br />";
+            // var contact = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th backgroundColor='red'>Mail Address</th><td backgroundColor='red'>" + feature.properties.mail_address + "</td></tr>" + altaddress + "<tr><th>City</th><td>" + feature.properties.mail_city + "</td></tr><tr><th>State</th><td>" + "CO" + "</td></tr><tr><th>Zip</th><td>" + feature.properties.mail_zip + "</td></tr></table><br />";
 
 
-            var title = feature.properties.lgname;
+            var title = feature.properties.geoname;
 
-            var detailed = "<br /><table class='table table-striped table-bordered table-condensed'><tr><th>Year</th><th>County</th><th>Subdistrict</th><th>Assessed Value</th><th>Levy</th></tr>";
+            // var detailed = "<br /><table class='table table-striped table-bordered table-condensed'><tr><th>Year</th><th>County</th><th>Subdistrict</th><th>Assessed Value</th><th>Levy</th></tr>";
 
-            for (var i = 0; i < limlevy.length; i = i + 1) {
-                if (limlevy[i].LG_ID == feature.properties.lgid) {
-                    if (limlevy[i].ASSESSED_VALUE !== "0") {
-                        detailed = detailed + "<tr><td>" + limlevy[i].BUDGET_YEAR + "</td><td>" + clookup(limlevy[i].COUNTY) + "</td><td>" + limlevy[i].SUBDIST_NUM + "</td><td>$" + commafy(limlevy[i].ASSESSED_VALUE) + "</td><td>" + limlevy[i].TOTAL_LEVY + "</td></tr>";
-                    }
-                }
-            }
+            // for (var i = 0; i < limlevy.length; i = i + 1) {
+            //     if (limlevy[i].LG_ID == feature.properties.lgid) {
+            //         if (limlevy[i].ASSESSED_VALUE !== "0") {
+            //             detailed = detailed + "<tr><td>" + limlevy[i].BUDGET_YEAR + "</td><td>" + clookup(limlevy[i].COUNTY) + "</td><td>" + limlevy[i].SUBDIST_NUM + "</td><td>$" + commafy(limlevy[i].ASSESSED_VALUE) + "</td><td>" + limlevy[i].TOTAL_LEVY + "</td></tr>";
+            //         }
+            //     }
+            // }
 
-            detailed = detailed + "</table><br />"
+            // detailed = detailed + "</table><br />"
 
-            var newlink = "https://dola.colorado.gov/dlg_portal/filings.jsf?id=" + feature.properties.lgid;
+            // var newlink = "https://dola.colorado.gov/dlg_portal/filings.jsf?id=" + feature.properties.lgid;
 
             layer.on({
                 click: function(e) {
                     $("#feature-title").html(title);
                     $("#feature-info").html(content);
-                    $("#detailed").html(detailed);
-                    $("#contact").html(contact);
-                    $('#dolalink').attr('href', newlink);
-
-                    // other tab information
-
-                    // other tab information
-
+                    //$("#contact").html(contact);
+                    //$('#dolalink').attr('href', newlink);
+                    
                     $("#featureModal").modal("show");
                     this.bringToBack(); //to deal with overlapping features.  click again and obscured feature is now on top
+                    $(function() {
+                        $(".mhi").each(function(index) {
+                            var scale = [['bad', 0], ['neutral', 60000], ['good', 600000]];
+                            var score = $(this).text();
+                            console.log(score);
+                            for (var i = 0; i < scale.length; i++) {
+                                if (score <= scale[i][1]) {
+                                    $(this).addClass(scale[i][0]);
+                                }
+                            }
+                        });
+                        $(".mhi_moe").each(function(index) {
+                            var scale = [['bad', 0], ['neutral', 3000], ['good', 225000]];
+                            var score = $(this).text();
+                            console.log(score);
+                            for (var i = 0; i < scale.length; i++) {
+                                if (score <= scale[i][1]) {
+                                    $(this).addClass(scale[i][0]);
+                                }
+                            }
+                        });
+                        $(".mvi").each(function(index) {
+                            var scale = [['bad', 0], ['neutral', 200000], ['good', 3000000]];
+                            var score = $(this).text();
+                            console.log(score);
+                            for (var i = 0; i < scale.length; i++) {
+                                if (score <= scale[i][1]) {
+                                    $(this).addClass(scale[i][0]);
+                                }
+                            }
+                        });
+                        $(".mvi_moe").each(function(index) {
+                            var scale = [['bad', 0], ['neutral', 20000], ['good', 225000]];
+                            var score = $(this).text();
+                            console.log(score);
+                            for (var i = 0; i < scale.length; i++) {
+                                if (score <= scale[i][1]) {
+                                    $(this).addClass(scale[i][0]);
+                                }
+                            }
+                        });
+                        $(".jobs_2005").each(function(index) {
+                            var scale = [['bad', -50000], ['neutral', 0], ['good', 225000]];
+                            var score = $(this).text();
+                            console.log(score);
+                            for (var i = 0; i < scale.length; i++) {
+                                if (score <= scale[i][1]) {
+                                    $(this).addClass(scale[i][0]);
+                                }
+                            }
+                        });
+                        $(".jobs_2015").each(function(index) {
+                            var scale = [['bad', 50000], ['neutral', 100000], ['good', 225000]];
+                            var score = $(this).text();
+                            console.log(score);
+                            for (var i = 0; i < scale.length; i++) {
+                                if (score <= scale[i][1]) {
+                                    $(this).addClass(scale[i][0]);
+                                }
+                            }
+                        });
+                        $(".job_change").each(function(index) {
+                            var scale = [['bad', -50000], ['neutral', 0], ['good', 225000]];
+                            var score = $(this).text();
+                            console.log(score);
+                            for (var i = 0; i < scale.length; i++) {
+                                if (score <= scale[i][1]) {
+                                    $(this).addClass(scale[i][0]);
+                                }
+                            }
+                        });
+                    });
                 },
                 mouseover: highlightFeature,
                 mouseout: mouseout
             });
-        }
+        };
 
-    }
+    };
 
     function commafy(nStr) {
         var x, x1, x2, rgx;
@@ -994,202 +1052,202 @@ var graphicScale = L.control.graphicScale().addTo(map);
         return x1 + x2;
     }
 
-    function clookup(ccode) {
+    // function clookup(ccode) {
 
-        if (ccode == "001") {
-            return 'Adams'
-        };
-        if (ccode == "003") {
-            return 'Alamosa'
-        };
-        if (ccode == "005") {
-            return 'Arapahoe'
-        };
-        if (ccode == "007") {
-            return 'Archuleta'
-        };
-        if (ccode == "009") {
-            return 'Baca'
-        };
-        if (ccode == "011") {
-            return 'Bent'
-        };
-        if (ccode == "013") {
-            return 'Boulder'
-        };
-        if (ccode == "014") {
-            return 'Broomfield'
-        };
-        if (ccode == "015") {
-            return 'Chaffee'
-        };
-        if (ccode == "017") {
-            return 'Cheyenne'
-        };
-        if (ccode == "019") {
-            return 'Clear Creek'
-        };
-        if (ccode == "021") {
-            return 'Conejos'
-        };
-        if (ccode == "023") {
-            return 'Costilla'
-        };
-        if (ccode == "025") {
-            return 'Crowley'
-        };
-        if (ccode == "027") {
-            return 'Custer'
-        };
-        if (ccode == "029") {
-            return 'Delta'
-        };
-        if (ccode == "031") {
-            return 'Denver'
-        };
-        if (ccode == "033") {
-            return 'Dolores'
-        };
-        if (ccode == "035") {
-            return 'Douglas'
-        };
-        if (ccode == "037") {
-            return 'Eagle'
-        };
-        if (ccode == "039") {
-            return 'Elbert'
-        };
-        if (ccode == "041") {
-            return 'El Paso'
-        };
-        if (ccode == "043") {
-            return 'Fremont'
-        };
-        if (ccode == "045") {
-            return 'Garfield'
-        };
-        if (ccode == "047") {
-            return 'Gilpin'
-        };
-        if (ccode == "049") {
-            return 'Grand'
-        };
-        if (ccode == "051") {
-            return 'Gunnison'
-        };
-        if (ccode == "053") {
-            return 'Hinsdale'
-        };
-        if (ccode == "055") {
-            return 'Huerfano'
-        };
-        if (ccode == "057") {
-            return 'Jackson'
-        };
-        if (ccode == "059") {
-            return 'Jefferson'
-        };
-        if (ccode == "061") {
-            return 'Kiowa'
-        };
-        if (ccode == "063") {
-            return 'Kit Carson'
-        };
-        if (ccode == "065") {
-            return 'Lake'
-        };
-        if (ccode == "067") {
-            return 'La Plata'
-        };
-        if (ccode == "069") {
-            return 'Larimer'
-        };
-        if (ccode == "071") {
-            return 'Las Animas'
-        };
-        if (ccode == "073") {
-            return 'Lincoln'
-        };
-        if (ccode == "075") {
-            return 'Logan'
-        };
-        if (ccode == "077") {
-            return 'Mesa'
-        };
-        if (ccode == "079") {
-            return 'Mineral'
-        };
-        if (ccode == "081") {
-            return 'Moffat'
-        };
-        if (ccode == "083") {
-            return 'Montezuma'
-        };
-        if (ccode == "085") {
-            return 'Montrose'
-        };
-        if (ccode == "087") {
-            return 'Morgan'
-        };
-        if (ccode == "089") {
-            return 'Otero'
-        };
-        if (ccode == "091") {
-            return 'Ouray'
-        };
-        if (ccode == "093") {
-            return 'Park'
-        };
-        if (ccode == "095") {
-            return 'Phillips'
-        };
-        if (ccode == "097") {
-            return 'Pitkin'
-        };
-        if (ccode == "099") {
-            return 'Prowers'
-        };
-        if (ccode == "101") {
-            return 'Pueblo'
-        };
-        if (ccode == "103") {
-            return 'Rio Blanco'
-        };
-        if (ccode == "105") {
-            return 'Rio Grande'
-        };
-        if (ccode == "107") {
-            return 'Routt'
-        };
-        if (ccode == "109") {
-            return 'Saguache'
-        };
-        if (ccode == "111") {
-            return 'San Juan'
-        };
-        if (ccode == "113") {
-            return 'San Miguel'
-        };
-        if (ccode == "115") {
-            return 'Sedgwick'
-        };
-        if (ccode == "117") {
-            return 'Summit'
-        };
-        if (ccode == "119") {
-            return 'Teller'
-        };
-        if (ccode == "121") {
-            return 'Washington'
-        };
-        if (ccode == "123") {
-            return 'Weld'
-        };
-        if (ccode == "125") {
-            return 'Yuma'
-        };
+    //     if (ccode == "001") {
+    //         return 'Adams'
+    //     };
+    //     if (ccode == "003") {
+    //         return 'Alamosa'
+    //     };
+    //     if (ccode == "005") {
+    //         return 'Arapahoe'
+    //     };
+    //     if (ccode == "007") {
+    //         return 'Archuleta'
+    //     };
+    //     if (ccode == "009") {
+    //         return 'Baca'
+    //     };
+    //     if (ccode == "011") {
+    //         return 'Bent'
+    //     };
+    //     if (ccode == "013") {
+    //         return 'Boulder'
+    //     };
+    //     if (ccode == "014") {
+    //         return 'Broomfield'
+    //     };
+    //     if (ccode == "015") {
+    //         return 'Chaffee'
+    //     };
+    //     if (ccode == "017") {
+    //         return 'Cheyenne'
+    //     };
+    //     if (ccode == "019") {
+    //         return 'Clear Creek'
+    //     };
+    //     if (ccode == "021") {
+    //         return 'Conejos'
+    //     };
+    //     if (ccode == "023") {
+    //         return 'Costilla'
+    //     };
+    //     if (ccode == "025") {
+    //         return 'Crowley'
+    //     };
+    //     if (ccode == "027") {
+    //         return 'Custer'
+    //     };
+    //     if (ccode == "029") {
+    //         return 'Delta'
+    //     };
+    //     if (ccode == "031") {
+    //         return 'Denver'
+    //     };
+    //     if (ccode == "033") {
+    //         return 'Dolores'
+    //     };
+    //     if (ccode == "035") {
+    //         return 'Douglas'
+    //     };
+    //     if (ccode == "037") {
+    //         return 'Eagle'
+    //     };
+    //     if (ccode == "039") {
+    //         return 'Elbert'
+    //     };
+    //     if (ccode == "041") {
+    //         return 'El Paso'
+    //     };
+    //     if (ccode == "043") {
+    //         return 'Fremont'
+    //     };
+    //     if (ccode == "045") {
+    //         return 'Garfield'
+    //     };
+    //     if (ccode == "047") {
+    //         return 'Gilpin'
+    //     };
+    //     if (ccode == "049") {
+    //         return 'Grand'
+    //     };
+    //     if (ccode == "051") {
+    //         return 'Gunnison'
+    //     };
+    //     if (ccode == "053") {
+    //         return 'Hinsdale'
+    //     };
+    //     if (ccode == "055") {
+    //         return 'Huerfano'
+    //     };
+    //     if (ccode == "057") {
+    //         return 'Jackson'
+    //     };
+    //     if (ccode == "059") {
+    //         return 'Jefferson'
+    //     };
+    //     if (ccode == "061") {
+    //         return 'Kiowa'
+    //     };
+    //     if (ccode == "063") {
+    //         return 'Kit Carson'
+    //     };
+    //     if (ccode == "065") {
+    //         return 'Lake'
+    //     };
+    //     if (ccode == "067") {
+    //         return 'La Plata'
+    //     };
+    //     if (ccode == "069") {
+    //         return 'Larimer'
+    //     };
+    //     if (ccode == "071") {
+    //         return 'Las Animas'
+    //     };
+    //     if (ccode == "073") {
+    //         return 'Lincoln'
+    //     };
+    //     if (ccode == "075") {
+    //         return 'Logan'
+    //     };
+    //     if (ccode == "077") {
+    //         return 'Mesa'
+    //     };
+    //     if (ccode == "079") {
+    //         return 'Mineral'
+    //     };
+    //     if (ccode == "081") {
+    //         return 'Moffat'
+    //     };
+    //     if (ccode == "083") {
+    //         return 'Montezuma'
+    //     };
+    //     if (ccode == "085") {
+    //         return 'Montrose'
+    //     };
+    //     if (ccode == "087") {
+    //         return 'Morgan'
+    //     };
+    //     if (ccode == "089") {
+    //         return 'Otero'
+    //     };
+    //     if (ccode == "091") {
+    //         return 'Ouray'
+    //     };
+    //     if (ccode == "093") {
+    //         return 'Park'
+    //     };
+    //     if (ccode == "095") {
+    //         return 'Phillips'
+    //     };
+    //     if (ccode == "097") {
+    //         return 'Pitkin'
+    //     };
+    //     if (ccode == "099") {
+    //         return 'Prowers'
+    //     };
+    //     if (ccode == "101") {
+    //         return 'Pueblo'
+    //     };
+    //     if (ccode == "103") {
+    //         return 'Rio Blanco'
+    //     };
+    //     if (ccode == "105") {
+    //         return 'Rio Grande'
+    //     };
+    //     if (ccode == "107") {
+    //         return 'Routt'
+    //     };
+    //     if (ccode == "109") {
+    //         return 'Saguache'
+    //     };
+    //     if (ccode == "111") {
+    //         return 'San Juan'
+    //     };
+    //     if (ccode == "113") {
+    //         return 'San Miguel'
+    //     };
+    //     if (ccode == "115") {
+    //         return 'Sedgwick'
+    //     };
+    //     if (ccode == "117") {
+    //         return 'Summit'
+    //     };
+    //     if (ccode == "119") {
+    //         return 'Teller'
+    //     };
+    //     if (ccode == "121") {
+    //         return 'Washington'
+    //     };
+    //     if (ccode == "123") {
+    //         return 'Weld'
+    //     };
+    //     if (ccode == "125") {
+    //         return 'Yuma'
+    //     };
 
-    }
+    // }
 
     //on dom loaded
     $(document).ready(function() {

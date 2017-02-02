@@ -79,6 +79,15 @@ input[type="radio"], input[type="checkbox"] {
 .table {
   margin-bottom: 0px;
 }
+.good {
+    background-color: green;
+}
+.neutral {
+    background-color: yellow;
+}
+.bad {
+    background-color: red;
+}
 .navbar .navbar-brand {
   font-weight: bold;
   font-size: 25px;
@@ -139,8 +148,8 @@ input[type="radio"], input[type="checkbox"] {
 
 .leaflet-control-command-interior
 {
-    width: 260px;
-    height: 100px;
+    width: 160px;
+    height: 70px;
     display: block;
     padding: 3px;
     border-radius: 3px;
@@ -161,7 +170,7 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 .seldiv{
-  margin-top: 15px;
+  margin-top: 5px;
   margin-bottom: 8px;
 }
 
