@@ -971,7 +971,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".mhi_moe").each(function(index) {
-                            var scale = [['good', 3000], ['neutral', 20000], ['bad', 225000]];
+                            var scale = [['unreliable', 0], ['somewhat', 20000], ['reliable', 300000]];
                             var score = $(this).text();
                             console.log(score);
                             for (var i = 0; i < scale.length; i++) {
@@ -991,7 +991,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".mvi_moe").each(function(index) {
-                            var scale = [['good', 20000], ['neutral', 50000], ['bad', 225000]];
+                            var scale = [['unreliable', 0], ['somewhat', 20000], ['reliable', 300000]];
                             var score = $(this).text();
                             console.log(score);
                             for (var i = 0; i < scale.length; i++) {

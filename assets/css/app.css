@@ -88,6 +88,15 @@ input[type="radio"], input[type="checkbox"] {
 .bad {
     background-color: red;
 }
+.reliable {
+    background-color: green;
+}
+.somewhat {
+    background-color: yellow;
+}
+.unreliable {
+    background-color: red;
+}
 .navbar .navbar-brand {
   font-weight: bold;
   font-size: 25px;
