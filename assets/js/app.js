@@ -961,7 +961,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                     this.bringToBack(); //to deal with overlapping features.  click again and obscured feature is now on top
                     $(function() {
                         $(".mhi").each(function(index) {
-                            var scale = [['bad', 0], ['neutral', 60000], ['good', 600000]];
+                            var scale = [['bad', 60000], ['neutral', 100000], ['good', 600000]];
                             var score = $(this).text();
                             console.log(score);
                             for (var i = 0; i < scale.length; i++) {
@@ -971,7 +971,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".mhi_moe").each(function(index) {
-                            var scale = [['bad', 0], ['neutral', 3000], ['good', 225000]];
+                            var scale = [['good', 3000], ['neutral', 20000], ['bad', 225000]];
                             var score = $(this).text();
                             console.log(score);
                             for (var i = 0; i < scale.length; i++) {
@@ -981,7 +981,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".mvi").each(function(index) {
-                            var scale = [['bad', 0], ['neutral', 200000], ['good', 3000000]];
+                            var scale = [['bad', 200000], ['neutral', 300000], ['good', 3000000]];
                             var score = $(this).text();
                             console.log(score);
                             for (var i = 0; i < scale.length; i++) {
@@ -991,7 +991,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".mvi_moe").each(function(index) {
-                            var scale = [['bad', 0], ['neutral', 20000], ['good', 225000]];
+                            var scale = [['good', 20000], ['neutral', 50000], ['bad', 225000]];
                             var score = $(this).text();
                             console.log(score);
                             for (var i = 0; i < scale.length; i++) {
@@ -1021,7 +1021,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".job_change").each(function(index) {
-                            var scale = [['bad', -50000], ['neutral', 0], ['good', 225000]];
+                            var scale = [['bad', -0], ['neutral', 1000], ['good', 225000]];
                             var score = $(this).text();
                             console.log(score);
                             for (var i = 0; i < scale.length; i++) {
