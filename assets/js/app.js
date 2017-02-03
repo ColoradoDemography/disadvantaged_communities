@@ -272,7 +272,7 @@ function init() {
         newbounds = (coord.swlng - diff2) + "," + (coord.swlat - diff1) + "," + (coord.nelng + diff2) + "," + (coord.nelat + diff1);
 
         //geojsonLayer.refresh("https://gis.dola.colorado.gov/capi/geojson?limit=99999&db=acs1115&schema=data&table=b19013&sumlev=" + filter + "&type=json&state=8"); //add a new layer replacing whatever is there
-        geojsonLayer.refresh("../assets/data/srf_acs_" + filter + ".geojson")
+        geojsonLayer.refresh("data/srf_acs_" + filter + ".geojson")
 
     }
 
