@@ -207,7 +207,7 @@ function init() {
             case 'Place':
                 //filter = "160";
                 filter = 'place';
-                titleGeo = 'Pounty';
+                titleGeo = 'Place';
                 break;
             case 'Tract':
                 //filter = "140";
@@ -858,22 +858,26 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".job_change").each(function(index) {
-                            var scale = [['bad', 0], ['neutral', 1000], ['good', 100000]];
-                            var score = $(this).text();
-                            for (var i = 0; i < scale.length; i++) {
-                                if (score <= scale[i][1]) {
-                                    $(this).text(commafy(feature.properties.sdo_job_change.toFixed(1)));
-                                    $(this).addClass(scale[i][0]);
+                            if (filter != 'place') {    
+                                var scale = [['bad', 0], ['neutral', 1000], ['good', 100000]];
+                                var score = $(this).text();
+                                for (var i = 0; i < scale.length; i++) {
+                                    if (score <= scale[i][1]) {
+                                        $(this).text(commafy(feature.properties.sdo_job_change.toFixed(1)));
+                                        $(this).addClass(scale[i][0]);
+                                    }
                                 }
                             }
                         });
                         $(".unemp").each(function(index) {
-                            var scale = [['good', 0], ['neutral', 4], ['bad', 6]];
-                            var score = $(this).text();
-                            for (var i = 0; i < scale.length; i++) {
-                                if (score >= scale[i][1]) {
-                                    $(this).text(feature.properties.bls_unemp_avg.toFixed(2)+"%");
-                                    $(this).addClass(scale[i][0]);
+                            if (filter != 'place') {
+                                var scale = [['good', 0], ['neutral', 4], ['bad', 6]];
+                                var score = $(this).text();
+                                for (var i = 0; i < scale.length; i++) {
+                                    if (score >= scale[i][1]) {
+                                        $(this).text(feature.properties.bls_unemp_avg.toFixed(2)+"%");
+                                        $(this).addClass(scale[i][0]);
+                                    }
                                 }
                             }
                         });
