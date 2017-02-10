@@ -80,22 +80,13 @@ input[type="radio"], input[type="checkbox"] {
   margin-bottom: 0px;
 }
 .good {
-    background-color: green;
+    background-color: #99ff33;
 }
 .neutral {
-    background-color: yellow;
+    background-color: #ffff00;
 }
 .bad {
-    background-color: red;
-}
-.reliable {
-    background-color: green;
-}
-.somewhat {
-    background-color: yellow;
-}
-.unreliable {
-    background-color: red;
+    background-color: #ff6666;
 }
 .navbar .navbar-brand {
   font-weight: bold;
