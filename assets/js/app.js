@@ -882,6 +882,9 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                     });
+                    $("#export").click(function(){
+                        $("#feature-info").tableToCSV();
+                    })
                 },
                 mouseover: highlightFeature,
                 mouseout: mouseout
