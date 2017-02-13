@@ -882,8 +882,9 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                     });
+                    console.log(title);
                     $("#export").click(function(){
-                        $("#feature-info").tableToCSV();
+                        $("#feature-info").tableToCSV(title);
                     })
                 },
                 mouseover: highlightFeature,
@@ -904,6 +905,36 @@ var graphicScale = L.control.graphicScale().addTo(map);
             x1 = x1.replace(rgx, '$1' + ',' + '$2');
         }
         return x1 + x2;
+    }
+    
+    //Searchbox functionality
+    $("#searchbox").click(function () {
+            $(this).select();
+    });
+    
+    $('#searchbox .typeahead').typeahead({
+        hint: true,
+        highlight: true
+    },
+    {
+        name: 'feature.properties.geoname',
+        displayKey: 'value',
+        source: geojsonLayer
+    }
+    );
+    
+    $('#searchbox .typeahead').on('typeahead:selected', function (e, datum) {
+    	searchresult(datum);
+    }).on('typeahead:autocompleted', function (e, datum) {
+    	searchresult(datum);	
+    });
+    
+    function searchresult(result){
+        for(i=1;i<523;i++){
+        	if(lv[i].n==result.value){
+        		map.panTo(new L.LatLng(lv[i].lat,lv[i].lng));
+        	}
+        }
     }
 
     //on dom loaded

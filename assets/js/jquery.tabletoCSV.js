@@ -1,4 +1,4 @@
-jQuery.fn.tableToCSV = function() {
+jQuery.fn.tableToCSV = function(ftitle) {
     
     var clean_text = function(text){
         text = text.replace(/"/g, '""');
@@ -7,7 +7,7 @@ jQuery.fn.tableToCSV = function() {
     
 	$(this).each(function(){
 			var table = $(this);
-			var caption = $(this).find('caption').text();
+			var caption = ftitle;//$(this).find('#feature-title').text();
 			var title = [];
 			var rows = [];
 
