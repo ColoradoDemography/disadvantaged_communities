@@ -730,18 +730,33 @@ var graphicScale = L.control.graphicScale().addTo(map);
             var mhi_cv = feature.properties.b19013_moe001/1.645/feature.properties.b19013001*100
             var mhv_cv = feature.properties.b25077_moe001/1.645/feature.properties.b25077001*100
 
-            var content = "<br /><table class='table table-striped table-bordered table-condensed'>"// + "<tr><th>Location</th><td>" + feature.properties.geoname + "</td></tr>"
+            if (feature.properties.sdo_jobs_2005 > 0) {
+                var content = "<br /><table class='table table-striped table-bordered table-condensed'>"// + "<tr><th>Location</th><td>" + feature.properties.geoname + "</td></tr>"
                         + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td></tr>"
                         + "<tr><th>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td></tr>"
                         + "<tr><th>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td></tr>"
                         + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td></tr><tr>"
                         + "<th>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td></tr>"
                         + "<tr><th>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td></tr>"
-                        + "<th>Jobs 2005</th><td class='jobs_2005'>" + feature.properties.sdo_jobs_2005 + "</td></tr>"
-                        + "<th>Jobs 2015</th><td class='jobs_2015'>" + feature.properties.sdo_jobs_2015 + "</td></tr>"
-                        + "<th>Jobs Change</th><td class='job_change'>" + feature.properties.sdo_job_change + "</td></tr>"
-                        + "<tr><th>Unemployment</th><td class='unemp'>" + feature.properties.bls_unemp_avg + "</td></tr>"
+                        + "<th>County Jobs 2005</th><td class='jobs_2005'>" + feature.properties.sdo_jobs_2005 + "</td></tr>"
+                        + "<th>County Jobs 2015</th><td class='jobs_2015'>" + feature.properties.sdo_jobs_2015 + "</td></tr>"
+                        + "<th>County Jobs Change</th><td class='job_change'>" + feature.properties.sdo_job_change + "</td></tr>"
+                        + "<tr><th>County Unemployment</th><td class='unemp'>" + feature.properties.bls_unemp_avg + "</td></tr>"
                         + "</table><br />";
+            } else {
+                 var content = "<br /><table class='table table-striped table-bordered table-condensed'>"// + "<tr><th>Location</th><td>" + feature.properties.geoname + "</td></tr>"
+                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td></tr>"
+                        + "<tr><th>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td></tr>"
+                        + "<tr><th>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td></tr><tr>"
+                        + "<th>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td></tr>"
+                        + "<tr><th>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td></tr>"
+                        + "<th>County Jobs 2005</th><td class='jobs_2005'>" + "Contact DOLA Analyst" + "</td></tr>"
+                        + "<th>County Jobs 2015</th><td class='jobs_2015'>" + "Contact DOLA Analyst" + "</td></tr>"
+                        + "<th>County Jobs Change</th><td class='job_change'>" + "Contact DOLA Analyst" + "</td></tr>"
+                        + "<tr><th>County Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td></tr>"
+                        + "</table><br />";
+            }
             
             // console.log(content);
             // var altaddress = "";
