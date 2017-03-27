@@ -853,10 +853,13 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //         $(this).addClass(scale[i][0]);
                             //     }
                             // }
-                            if (filter != 'place') {
+                            //if (filter != 'place') {
                                 var jobs_2005_text = commafy(feature.properties.sdo_jobs_2005.toFixed(1));
                                 $(this).text(jobs_2005_text);
-                            }
+                                if (feature.properties.sdo_jobs_2005 == 0) {
+                                    $(this).text("Contact DOLA Analyst");
+                                }
+                            //}
                         });
                         $(".jobs_2015").each(function(index) {
                             // var scale = [['bad', 50000], ['neutral', 100000], ['good', 225000]];
@@ -867,13 +870,16 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //         $(this).addClass(scale[i][0]);
                             //     }
                             // }
-                            if (filter != 'place') {
+                            //if (filter != 'place') {
                                 var jobs_2015_text = commafy(feature.properties.sdo_jobs_2015.toFixed(1));
                                 $(this).text(jobs_2015_text);
-                            }
+                                if (feature.properties.sdo_jobs_2015 == 0) {
+                                    $(this).text("Contact DOLA Analyst");
+                                }
+                            //}
                         });
                         $(".job_change").each(function(index) {
-                            if (filter != 'place') {    
+                            //if (filter != 'place') {    
                                 var scale = [['bad', 0], ['neutral', 1000], ['good', 100000]];
                                 var score = $(this).text();
                                 for (var i = 0; i < scale.length; i++) {
@@ -882,10 +888,10 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                         $(this).addClass(scale[i][0]);
                                     }
                                 }
-                            }
+                            //}
                         });
                         $(".unemp").each(function(index) {
-                            if (filter != 'place') {
+                            //if (filter != 'place') {
                                 var scale = [['good', 0], ['neutral', 4], ['bad', 6]];
                                 var score = $(this).text();
                                 for (var i = 0; i < scale.length; i++) {
@@ -894,7 +900,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                         $(this).addClass(scale[i][0]);
                                     }
                                 }
-                            }
+                            //}
                         });
                     });
                     console.log(title);
