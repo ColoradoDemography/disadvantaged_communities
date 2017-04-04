@@ -730,7 +730,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
             var mhi_cv = feature.properties.b19013_moe001/1.645/feature.properties.b19013001*100
             var mhv_cv = feature.properties.b25077_moe001/1.645/feature.properties.b25077001*100
 
-            if (feature.properties.sdo_jobs_2005 > 0) {
+            if (feature.properties.sdo_jobs_2006 > 0) {
                 var content = "<br /><table class='table table-striped table-bordered table-condensed'>"// + "<tr><th>Location</th><td>" + feature.properties.geoname + "</td></tr>"
                         + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td></tr>"
                         + "<tr><th>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td></tr>"
@@ -738,7 +738,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td></tr><tr>"
                         + "<th>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td></tr>"
                         + "<tr><th>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td></tr>"
-                        + "<th>County Jobs 2005</th><td class='jobs_2005'>" + feature.properties.sdo_jobs_2005 + "</td></tr>"
+                        + "<th>County Jobs 2006</th><td class='jobs_2005'>" + feature.properties.sdo_jobs_2006 + "</td></tr>"
                         + "<th>County Jobs 2015</th><td class='jobs_2015'>" + feature.properties.sdo_jobs_2015 + "</td></tr>"
                         + "<th>County Jobs Change</th><td class='job_change'>" + feature.properties.sdo_job_change + "</td></tr>"
                         + "<tr><th>County Unemployment</th><td class='unemp'>" + feature.properties.bls_unemp_avg + "</td></tr>"
@@ -751,7 +751,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td></tr><tr>"
                         + "<th>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td></tr>"
                         + "<tr><th>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td></tr>"
-                        + "<th>County Jobs 2005</th><td class='jobs_2005'>" + "Contact DOLA Analyst" + "</td></tr>"
+                        + "<th>County Jobs 2006</th><td class='jobs_2005'>" + "Contact DOLA Analyst" + "</td></tr>"
                         + "<th>County Jobs 2015</th><td class='jobs_2015'>" + "Contact DOLA Analyst" + "</td></tr>"
                         + "<th>County Jobs Change</th><td class='job_change'>" + "Contact DOLA Analyst" + "</td></tr>"
                         + "<tr><th>County Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td></tr>"
@@ -796,18 +796,19 @@ var graphicScale = L.control.graphicScale().addTo(map);
                     this.bringToBack(); //to deal with overlapping features.  click again and obscured feature is now on top
                     $(function() {
                         $(".mhi").each(function(index) {
-                            var scale = [['bad', 60000], ['neutral', 100000], ['good', 600000]];
+                            var scale = [['good', 0], ['null', 48503.2]];//, ['bad', 48503.2]];
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
-                                if (score <= scale[i][1]) {
+                                if (score >= scale[i][1]) {
                                     $(this).text("$"+commafy(feature.properties.b19013001));
                                     $(this).addClass(scale[i][0]);
                                 }
                             }
                         });
                         $(".mhi_moe").each(function(index) {
-                            var scale = [['good', 0], ['neutral', 20000], ['bad', 50000]];
-                            var score = $(this).text();
+                            var scale = [['good', 0], ['null', 38802.6]];//, ['bad', 38802.6]];
+                            var score = parseInt($(this).text()) + parseInt(feature.properties.b19013001); //$(this).text() + mhi?
+                            console.log("MHI_MOE Score = " + score);
                             for (var i = 0; i < scale.length; i++) {
                                 if (score >= scale[i][1]) {
                                     $(this).text("$"+commafy(feature.properties.b19013_moe001));
@@ -816,18 +817,19 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".mhv").each(function(index) {
-                            var scale = [['bad', 200000], ['neutral', 300000], ['good', 3000000]];
+                            var scale = [['good', 0], ['null', 247800]];//, ['bad', 247800]];
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
-                                if (score <= scale[i][1]) {
+                                if (score >= scale[i][1]) {
                                     $(this).text("$"+commafy(feature.properties.b25077001));
                                     $(this).addClass(scale[i][0]);
                                 }
                             }
                         });
                         $(".mhv_moe").each(function(index) {
-                            var scale = [['good', 0], ['neutral', 20000], ['bad', 50000]];
-                            var score = $(this).text();
+                            var scale = [['good', 0], ['null', 247800]];//, ['bad', 247800]];
+                            var score = parseInt($(this).text()) + parseInt(feature.properties.b25077001);
+                            console.log("MHV_MOE Score = " + score);
                             for (var i = 0; i < scale.length; i++) {
                                 if (score >= scale[i][1]) {
                                     $(this).text("$"+commafy(feature.properties.b25077_moe001));
@@ -880,10 +882,10 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         });
                         $(".job_change").each(function(index) {
                             //if (filter != 'place') {    
-                                var scale = [['bad', 0], ['neutral', 1000], ['good', 100000]];
+                                var scale = [['good', -100000], ['null', 0]];//, ['bad', 0]];
                                 var score = $(this).text();
                                 for (var i = 0; i < scale.length; i++) {
-                                    if (score <= scale[i][1]) {
+                                    if (score >= scale[i][1]) {
                                         $(this).text(commafy(feature.properties.sdo_job_change.toFixed(1)));
                                         $(this).addClass(scale[i][0]);
                                     }
@@ -892,10 +894,10 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         });
                         $(".unemp").each(function(index) {
                             //if (filter != 'place') {
-                                var scale = [['good', 0], ['neutral', 4], ['bad', 6]];
+                                var scale = [['null', 4.6], ['good', 8]];
                                 var score = $(this).text();
                                 for (var i = 0; i < scale.length; i++) {
-                                    if (score >= scale[i][1]) {
+                                    if (score <= scale[i][1]) {
                                         $(this).text(feature.properties.bls_unemp_avg.toFixed(2)+"%");
                                         $(this).addClass(scale[i][0]);
                                     }

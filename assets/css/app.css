@@ -88,6 +88,9 @@ input[type="radio"], input[type="checkbox"] {
 .bad {
     background-color: #ff6666;
 }
+.null {
+    background-color: #ffffff;
+}
 .navbar .navbar-brand {
   font-weight: bold;
   font-size: 25px;
@@ -215,7 +218,17 @@ input[type="radio"], input[type="checkbox"] {
 .leaflet-control-mapbox-geocoder-results {width: 250px;}
 .leaflet-control-mapbox-geocoder.active .leaflet-control-mapbox-geocoder-wrap {width: 250px;}
 
-
+.search-container {
+            width: 300px;
+        }
+        
+#searchbox {
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-bottom-left-radius: 4px;
+    -moz-border-top-left-radius: 4px;
+    -moz-border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
 
 
 .typeahead,
