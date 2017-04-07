@@ -733,28 +733,28 @@ var graphicScale = L.control.graphicScale().addTo(map);
             if (feature.properties.sdo_jobs_2006 > 0) {
                 var content = "<br /><table class='table table-striped table-bordered table-condensed'>"// + "<tr><th>Location</th><td>" + feature.properties.geoname + "</td></tr>"
                         + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td></tr>"
-                        + "<tr><th>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td></tr>"
-                        + "<tr><th>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td></tr><tr>"
-                        + "<th>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td></tr>"
-                        + "<tr><th>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td></tr>"
-                        + "<th>County Jobs 2006</th><td class='jobs_2005'>" + feature.properties.sdo_jobs_2006 + "</td></tr>"
-                        + "<th>County Jobs 2015</th><td class='jobs_2015'>" + feature.properties.sdo_jobs_2015 + "</td></tr>"
-                        + "<th>County Jobs Change</th><td class='job_change'>" + feature.properties.sdo_job_change + "</td></tr>"
-                        + "<tr><th>County Unemployment</th><td class='unemp'>" + feature.properties.bls_unemp_avg + "</td></tr>"
+                        + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td></tr>"
+                        + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td></tr>"
+                        + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td></tr>"
+                        + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td></tr>"
+                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + feature.properties.bls_unemp_avg + "</td></tr>"
+                        + "<tr><th>County 10-Year Jobs Change</th><td class='job_change'>" + feature.properties.sdo_job_change + "</td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2006</th><td class='jobs_2005'>" + feature.properties.sdo_jobs_2006 + "</td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2015</th><td class='jobs_2015'>" + feature.properties.sdo_jobs_2015 + "</td></tr>"
                         + "</table><br />";
             } else {
                  var content = "<br /><table class='table table-striped table-bordered table-condensed'>"// + "<tr><th>Location</th><td>" + feature.properties.geoname + "</td></tr>"
                         + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td></tr>"
-                        + "<tr><th>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td></tr>"
-                        + "<tr><th>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td></tr><tr>"
-                        + "<th>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td></tr>"
-                        + "<tr><th>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td></tr>"
-                        + "<th>County Jobs 2006</th><td class='jobs_2005'>" + "Contact DOLA Analyst" + "</td></tr>"
-                        + "<th>County Jobs 2015</th><td class='jobs_2015'>" + "Contact DOLA Analyst" + "</td></tr>"
-                        + "<th>County Jobs Change</th><td class='job_change'>" + "Contact DOLA Analyst" + "</td></tr>"
-                        + "<tr><th>County Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td></tr>"
+                        + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td></tr>"
+                        + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td></tr>"
+                        + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td></tr>"
+                        + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td></tr>"
+                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td></tr>"
+                        + "<tr><th>County 10-Year Jobs Change</th><td class='job_change'>" + "Contact DOLA Analyst" + "</td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2006</th><td class='jobs_2005'>" + "Contact DOLA Analyst" + "</td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2015</th><td class='jobs_2015'>" + "Contact DOLA Analyst" + "</td></tr>"
                         + "</table><br />";
             }
             
@@ -856,9 +856,9 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //     }
                             // }
                             //if (filter != 'place') {
-                                var jobs_2005_text = commafy(feature.properties.sdo_jobs_2005.toFixed(1));
-                                $(this).text(jobs_2005_text);
-                                if (feature.properties.sdo_jobs_2005 == 0) {
+                                var jobs_2006_text = commafy(feature.properties.sdo_jobs_2006.toFixed(0));
+                                $(this).text(jobs_2006_text);
+                                if (feature.properties.sdo_jobs_2006 == 0) {
                                     $(this).text("Contact DOLA Analyst");
                                 }
                             //}
@@ -873,7 +873,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //     }
                             // }
                             //if (filter != 'place') {
-                                var jobs_2015_text = commafy(feature.properties.sdo_jobs_2015.toFixed(1));
+                                var jobs_2015_text = commafy(feature.properties.sdo_jobs_2015.toFixed(0));
                                 $(this).text(jobs_2015_text);
                                 if (feature.properties.sdo_jobs_2015 == 0) {
                                     $(this).text("Contact DOLA Analyst");
@@ -886,7 +886,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                 var score = $(this).text();
                                 for (var i = 0; i < scale.length; i++) {
                                     if (score >= scale[i][1]) {
-                                        $(this).text(commafy(feature.properties.sdo_job_change.toFixed(1)));
+                                        $(this).text(commafy(feature.properties.sdo_job_change.toFixed(0)));
                                         $(this).addClass(scale[i][0]);
                                     }
                                 }

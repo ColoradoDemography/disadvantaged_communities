@@ -25,17 +25,22 @@ jQuery.fn.tableToCSV = function(ftitle) {
 				rows.push(data);
 				});
 			title = title.join(",");
+			var ts = new Date();
+
+			rows.push("Source: 2017 SRF Disadvantaged Community Data Application");
+
+			rows.push(ts);
 			rows = rows.join("\n");
 
 			var csv = rows;
 			var uri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
 			var download_link = document.createElement('a');
 			download_link.href = uri;
-			var ts = new Date().getTime();
+
 			if(caption==""){
 				download_link.download = ts+".csv";
 			} else {
-				download_link.download = caption+"-"+ts+".csv";
+				download_link.download = caption+".csv";
 			}
 			document.body.appendChild(download_link);
 			download_link.click();

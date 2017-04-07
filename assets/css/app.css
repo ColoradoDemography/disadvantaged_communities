@@ -79,6 +79,9 @@ input[type="radio"], input[type="checkbox"] {
 .table {
   margin-bottom: 0px;
 }
+.indent {
+  margin-left: 5px;
+}
 .good {
     background-color: #99ff33;
 }
