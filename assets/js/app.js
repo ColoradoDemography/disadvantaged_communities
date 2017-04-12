@@ -79,40 +79,11 @@ function init() {
 
             var controlDiv = L.DomUtil.create('div', 'leaflet-control-command');
 
-
             var controlUI = L.DomUtil.create('div', 'leaflet-control-command-interior', controlDiv);
             controlUI.title = 'Census Geography';
             var textdiv = L.DomUtil.create('div', 'ctrldesc', controlUI);
             var divsec = L.DomUtil.create('b', 'titletext', textdiv);
             divsec.innerHTML = 'Choose a Geography';
-
-            // var y = L.DomUtil.create('input', '', textdiv);
-            // y.setAttribute("type", "radio");
-            // y.id = 'rtype';
-            // y.name = "rad";
-            // y.checked = true;
-            // divsec.appendChild(y);
-
-            // L.DomEvent
-            //     .addListener(y, 'change', L.DomEvent.stopPropagation)
-            //     .addListener(y, 'change', L.DomEvent.preventDefault)
-            //     .addListener(y, 'change', showhide);
-
-            // divsec.appendChild(document.createTextNode(" Type "));
-            // divsec.appendChild(document.createTextNode('\u00A0'));
-
-            // var z = L.DomUtil.create('input', '', textdiv);
-            // z.setAttribute("type", "radio");
-            // z.id = 'rname';
-            // z.name = "rad";
-            // divsec.appendChild(z);
-
-            // L.DomEvent
-            //     .addListener(z, 'change', L.DomEvent.stopPropagation)
-            //     .addListener(z, 'change', L.DomEvent.preventDefault)
-            //     .addListener(z, 'change', showhide);
-
-            // divsec.appendChild(document.createTextNode(" Name or ID"));
 
             var hrbreak = L.DomUtil.create('hr', '', controlUI);
             hrbreak.id = "hrcss";
@@ -121,7 +92,6 @@ function init() {
             opt1div.id = 'opt1div';
             var selectUI = L.DomUtil.create('select', 'seldiv', opt1div);
             selectUI.title = 'Select District Category';
-
 
             L.DomEvent
                 .addListener(selectUI, 'change', L.DomEvent.stopPropagation)
@@ -136,18 +106,6 @@ function init() {
                 option.value = option.textContent = item;
                 selectUI.appendChild(option);
             });
-
-            //Create the 'Show Inactive Districts' Control
-            //       var chkdiv = L.DomUtil.create('div', '', opt1div);
-
-            //       var x = L.DomUtil.create('input', '', chkdiv);
-            //         x.setAttribute("type", "checkbox");
-            //         x.id="ischk";
-            //       var t=document.createTextNode("Show Inactive Districts");
-            //         chkdiv.appendChild(t); 
-
-            //       x.addEventListener("change", refilter, false);
-
 
             var opt2div = L.DomUtil.create('div', '', controlUI);
             opt2div.id = 'opt2div';
@@ -169,28 +127,30 @@ function init() {
     L.control.command = function(options) {
         return new L.Control.Command(options);
     };
+    
+
 
     //switch control from dropdown search to district searchbox
-    function showhide() {
+    // function showhide() {
 
-        var typediv = document.getElementById("opt1div");
-        var namediv = document.getElementById("opt2div");
-        var hrcss = document.getElementById("hrcss");
+    //     var typediv = document.getElementById("opt1div");
+    //     var namediv = document.getElementById("opt2div");
+    //     var hrcss = document.getElementById("hrcss");
 
-        if ($('#rtype').is(':checked')) {
-            typediv.style.display = 'inline';
-            namediv.style.display = 'none';
-            hrcss.style.marginBottom = "5px";
-            lgid = "";
-            ajaxcall();
-        } else {
-            document.getElementById("slgid").value = "";
-            typediv.style.display = 'none';
-            namediv.style.display = 'inline';
-            hrcss.style.marginBottom = "15px";
-        }
+    //     if ($('#rtype').is(':checked')) {
+    //         typediv.style.display = 'inline';
+    //         namediv.style.display = 'none';
+    //         hrcss.style.marginBottom = "5px";
+    //         lgid = "";
+    //         ajaxcall();
+    //     } else {
+    //         document.getElementById("slgid").value = "";
+    //         typediv.style.display = 'none';
+    //         namediv.style.display = 'inline';
+    //         hrcss.style.marginBottom = "15px";
+    //     }
 
-    }
+    // }
 
     //sets global variable 'filter' equal to a comma separated list of lgtypeids.  Then gets those shapes from database.
     function refilter() {
@@ -275,9 +235,25 @@ function init() {
 
         //we calculate a bounding box equal much larger than the actual visible map.  This preloades shapes that are off the map.  Combined with the center point query, this will allow us to not have to requery the database on every map movement.
         newbounds = (coord.swlng - diff2) + "," + (coord.swlat - diff1) + "," + (coord.nelng + diff2) + "," + (coord.nelat + diff1);
-
+        
         //geojsonLayer.refresh("https://gis.dola.colorado.gov/capi/geojson?limit=99999&db=acs1115&schema=data&table=b19013&sumlev=" + filter + "&type=json&state=8"); //add a new layer replacing whatever is there
         geojsonLayer.refresh("assets/data/srf_acs_" + filter + ".geojson")
+        
+               if (window.searchControl)
+       {
+         map.removeControl(window.searchControl);
+       }
+    
+       // Add search gadget for this layer      
+       window.searchControl= new L.control.search({
+         layer: geojsonLayer, 
+         propertyName: 'geoname',
+         circleLocation: false,
+         collapsed: false,
+         position: 'topright'
+       });
+
+       map.addControl(window.searchControl);
 
     }
 
@@ -307,10 +283,15 @@ function init() {
         }
 
         geojsonLayer.clearLayers(); //(mostly) eliminates double-draw (should be technically unneccessary if you look at the code of leaflet-ajax...but still seems to help)
+        
         geojsonLayer.addData(data);
 
         geojsonLayer.setStyle(stylefunc); //geojsonLayer.setStyle(feat1);   
         map.addLayer(geojsonLayer);
+
+
+       // Remove old control, if any
+    
 
     }
 
@@ -402,8 +383,6 @@ var graphicScale = L.control.graphicScale().addTo(map);
         'clickable': false,
         'zIndex': 100
     });
-
-
 
     var LeafletFilterControl = L.control.command({
         postion: 'topleft'
@@ -498,44 +477,43 @@ var graphicScale = L.control.graphicScale().addTo(map);
 
 
     //sweet geocoder control : https://github.com/perliedman/leaflet-control-geocoder, modified to use my MapBox
-    var geocoders = {
-            'Mapbox': L.Control.Geocoder.mapbox(L.mapbox.accessToken)
-        },
-        selector = L.DomUtil.get('geocode-selector'),
-        control = new L.Control.Geocoder({
-            geocoder: null
-        }),
-        btn,
-        selection,
-        marker;
+    // var geocoders = {
+    //         'Mapbox': L.Control.Geocoder.mapbox(L.mapbox.accessToken)
+    //     },
+    //     selector = L.DomUtil.get('geocode-selector'),
+    //     control = new L.Control.Geocoder({
+    //         geocoder: null
+    //     }),
+    //     btn,
+    //     selection,
+    //     marker;
 
-    function select(geocoder, el) {
-        if (selection) {
-            L.DomUtil.removeClass(selection, 'selected');
-        }
+    // function select(geocoder, el) {
+    //     if (selection) {
+    //         L.DomUtil.removeClass(selection, 'selected');
+    //     }
 
-        control.options.geocoder = geocoder;
-        L.DomUtil.addClass(el, 'selected');
-        selection = el;
-    }
+    //     control.options.geocoder = geocoder;
+    //     L.DomUtil.addClass(el, 'selected');
+    //     selection = el;
+    // }
 
-    for (var name in geocoders) {
-        btn = L.DomUtil.create('button', 'leaflet-bar', selector);
-        btn.innerHTML = name;
-        (function(n) {
-            L.DomEvent.addListener(btn, 'click', function() {
-                select(geocoders[n], this);
-            }, btn);
-        })(name);
+    // for (var name in geocoders) {
+    //     btn = L.DomUtil.create('button', 'leaflet-bar', selector);
+    //     btn.innerHTML = name;
+    //     (function(n) {
+    //         L.DomEvent.addListener(btn, 'click', function() {
+    //             select(geocoders[n], this);
+    //         }, btn);
+    //     })(name);
 
-        if (!selection) {
-            select(geocoders[name], btn);
-        }
-    }
+    //     if (!selection) {
+    //         select(geocoders[name], btn);
+    //     }
+    // }
 
 
-    control.addTo(map);
-
+    // control.addTo(map);
 
     /* Prevent clicking from influencing map */
     $(".leaflet-control-command").dblclick(function(e) {
@@ -590,29 +568,29 @@ var graphicScale = L.control.graphicScale().addTo(map);
 
 
     //Typeahead (Name or ID Search)
-    {
+    // {
 
-        $('#opt2div .typeahead').typeahead({
-            hint: true,
-            highlight: true,
-            minLength: 4
-        }, {
-            name: 'districtsonly',
-            displayKey: 'value',
-            source: substringMatcher(districtsonly)
-        });
+    //     $('#opt2div .typeahead').typeahead({
+    //         hint: true,
+    //         highlight: true,
+    //         minLength: 4
+    //     }, {
+    //         name: 'districtsonly',
+    //         displayKey: 'value',
+    //         source: substringMatcher(districtsonly)
+    //     });
 
-        $('#opt2div .typeahead').on('typeahead:select', function(e, datum) {
-            searchresult(datum);
-        }).on('typeahead:autocomplete', function(e, datum) {
-            searchresult(datum);
-        });
+    //     $('#opt2div .typeahead').on('typeahead:select', function(e, datum) {
+    //         searchresult(datum);
+    //     }).on('typeahead:autocomplete', function(e, datum) {
+    //         searchresult(datum);
+    //     });
 
-        $('.typeahead').bind('typeahead:select', function(ev, suggestion) {
-            console.log('Selection: ' + suggestion);
-        });
+    //     $('.typeahead').bind('typeahead:select', function(ev, suggestion) {
+    //         console.log('Selection: ' + suggestion);
+    //     });
 
-    }
+    // }
 
     // function searchresult(result) {
     //     console.log(result);
@@ -931,11 +909,11 @@ var graphicScale = L.control.graphicScale().addTo(map);
     }
     
     //Searchbox functionality
-    $("#searchbox").click(function () {
+    $("#searchdiv").click(function () {console.log("Clicked");
             $(this).select();
     });
     
-    $('#searchbox .typeahead').typeahead({
+    $('#searchdiv .typeahead').typeahead({
         hint: true,
         highlight: true
     },
@@ -946,7 +924,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
     }
     );
     
-    $('#searchbox .typeahead').on('typeahead:selected', function (e, datum) {
+    $('#searchdiv .typeahead').on('typeahead:selected', function (e, datum) {
     	searchresult(datum);
     }).on('typeahead:autocompleted', function (e, datum) {
     	searchresult(datum);	
