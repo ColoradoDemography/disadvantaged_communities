@@ -239,18 +239,19 @@ function init() {
         //geojsonLayer.refresh("https://gis.dola.colorado.gov/capi/geojson?limit=99999&db=acs1115&schema=data&table=b19013&sumlev=" + filter + "&type=json&state=8"); //add a new layer replacing whatever is there
         geojsonLayer.refresh("assets/data/srf_acs_" + filter + ".geojson")
         
-               if (window.searchControl)
-       {
-         map.removeControl(window.searchControl);
-       }
+       if (window.searchControl)
+           {
+             map.removeControl(window.searchControl);
+           }
     
        // Add search gadget for this layer      
        window.searchControl= new L.control.search({
          layer: geojsonLayer, 
          propertyName: 'geoname',
-         circleLocation: false,
+         marker: false,
          collapsed: false,
-         position: 'topright'
+         zoom: 12,
+         textPlaceholder: 'Search selected geography'
        });
 
        map.addControl(window.searchControl);
