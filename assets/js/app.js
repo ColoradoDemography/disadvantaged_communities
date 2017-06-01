@@ -177,7 +177,7 @@ function init() {
             case 'Block Group':
                 //filter = "150";
                 filter = 'bg';
-                titleGeo = 'Block Group';
+                titleGeo = 'BG';
                 break;
         }
 
@@ -673,14 +673,23 @@ var graphicScale = L.control.graphicScale().addTo(map);
         });
 
         // Insert a headline into that popup
-        hed = $("<div></div>", {
-            text: titleGeo + ": " + fp.geoname,
-            css: {
-                fontSize: "16px",
-                marginBottom: "3px"
-            }
-        }).appendTo(popup);
-
+        if (titleGeo != "BG") {
+            hed = $("<div></div>", {
+                text: titleGeo + ": " + fp.geoname,
+                css: {
+                    fontSize: "16px",
+                    marginBottom: "3px"
+                }
+            }).appendTo(popup);
+        } else {
+            hed = $("<div></div>", {
+                text: titleGeo + " " + fp.geonum.toString().substr(12,1) + ", Tract: " + fp.geonum.toString().substr(6,6),
+                css: {
+                    fontSize: "16px",
+                    marginBottom: "3px"
+                }
+            }).appendTo(popup);
+        }
         // Add the popup to the map
         popup.appendTo("#map");
 
@@ -692,31 +701,18 @@ var graphicScale = L.control.graphicScale().addTo(map);
     function onEachFeature(feature, layer) {
 
         if (feature.properties){
-            var addurl = "";
-            var abbrevname = "";
-            var prevname = "";
 
-            if (feature.properties.url) {
-                addurl = "<tr><th>URL</th><td>" + feature.properties.url + "</td></tr>";
-            }
-            if (feature.properties.abbrev_name) {
-                abbrevname = "<tr><th>Short Name</th><td>" + feature.properties.abbrev_name + "</td></tr>";
-            }
-            if (feature.properties.prev_name) {
-                prevname = "<tr><th>Previous Name</th><td>" + feature.properties.prev_name + "</td></tr>";
-            }
-            
-            tableColumns = "<tr><th>FACTOR</th><th>Value</th><th>BENCHMARK</th></tr>"
-            
-            var mhi_cv = feature.properties.b19013_moe001/1.645/feature.properties.b19013001*100
-            var mhv_cv = feature.properties.b25077_moe001/1.645/feature.properties.b25077001*100
+            var tableColumns = "<tr><th>FACTOR</th><th>Value</th><th>BENCHMARK</th></tr>";
+            var bgname = "";
+            var mhi_cv = feature.properties.b19013_moe001/1.645/feature.properties.b19013001*100;
+            var mhv_cv = feature.properties.b25077_moe001/1.645/feature.properties.b25077001*100;
 
             if (feature.properties.sdo_jobs_2006 > 0) {
                 var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + tableColumns
                         + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= Than $48,503 (80% of State MHI)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $247,000 (100% of State MHV)</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $247,800 (100% of State MHV)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
                         + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + feature.properties.bls_unemp_avg + "</td><td>&#60;= 4.6%</td></tr>"
@@ -729,7 +725,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= $48,503 (80% of State MHI)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe001 + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $247,000 (100% of State MHV)</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $247,800 (100% of State MHV)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe001 + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
                         + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td><td>&#60;= 4.6%</td></tr>"
@@ -739,6 +735,9 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         + "</table><br />";
             }
             
+            var geonum2text = feature.properties.geonum.toString();
+            bgname = "BG " + geonum2text.substr(12,1) + ", Tract: " + geonum2text.substr(6,6);
+
             // console.log(content);
             // var altaddress = "";
 
@@ -748,8 +747,11 @@ var graphicScale = L.control.graphicScale().addTo(map);
 
             // var contact = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th backgroundColor='red'>Mail Address</th><td backgroundColor='red'>" + feature.properties.mail_address + "</td></tr>" + altaddress + "<tr><th>City</th><td>" + feature.properties.mail_city + "</td></tr><tr><th>State</th><td>" + "CO" + "</td></tr><tr><th>Zip</th><td>" + feature.properties.mail_zip + "</td></tr></table><br />";
 
-
-            var title = titleGeo + ": " + feature.properties.geoname;
+            if (geonum2text.length < 13) {
+                var title = titleGeo + ": " + feature.properties.geoname;
+            } else {
+                var title = bgname;
+            }
 
             // var detailed = "<br /><table class='table table-striped table-bordered table-condensed'><tr><th>Year</th><th>County</th><th>Subdistrict</th><th>Assessed Value</th><th>Levy</th></tr>";
 
