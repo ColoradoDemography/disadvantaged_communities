@@ -770,6 +770,8 @@ var graphicScale = L.control.graphicScale().addTo(map);
 
             layer.on({
                 click: function(e) {
+                    $("#feature-title").empty();
+                    $("#feature-info").empty();
                     $("#feature-title").html(title);
                     $("#feature-info").html(content);
                     //$("#contact").html(contact);
