@@ -27,7 +27,7 @@ jQuery.fn.tableToCSV = function(ftitle) {
 			title = title.join(",");
 			var ts = new Date();
 
-			rows.push("Source: 2018 SRF Disadvantaged Community Data Application");
+			rows.push("Source: 2019 SRF Disadvantaged Community Data Application");
 
 			rows.push(ts);
 			rows = rows.join("\n");
