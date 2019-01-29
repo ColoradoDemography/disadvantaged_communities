@@ -709,10 +709,10 @@ var graphicScale = L.control.graphicScale().addTo(map);
 
             if (feature.properties.jobs_2008 > 0) {
                 var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + tableColumns
-                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= Than $55,294 (80% of State MHI)</td></tr>"
+                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= Than $52,366 (80% of State MHI)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $348,900 (100% of State MHV)</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $286,100 (100% of State MHV)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
                         + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + feature.properties.unemp + "</td><td>&#62;= 3.9%</td></tr>"
@@ -722,10 +722,10 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         + "</table><br />";
             } else {
                  var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + tableColumns
-                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= $55,294 (80% of State MHI)</td></tr>"
+                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= $52,366 (80% of State MHI)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $348,900 (100% of State MHV)</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $286,100 (100% of State MHV)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
                         + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td><td>&#62;= 3.9%</td></tr>"
@@ -779,14 +779,14 @@ var graphicScale = L.control.graphicScale().addTo(map);
                     this.bringToBack(); //to deal with overlapping features.  click again and obscured feature is now on top
                     $(function() {
                         $(".mhi").each(function(index) {
-                            var scale = [['good', 0], ['null', 55294]];
+                            var scale = [['good', 0], ['null', 52366]];
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
                                 $(this).text("$"+commafy(feature.properties.b19013001));                                
-                                if (score <= 55294 && mhi_cv <= 12) {
+                                if (score <= 52366 && mhi_cv <= 12) {
                                     $(this).addClass('good');
                                 }
-                                if (feature.properties.b19013001 + feature.properties.b19013_moe <= 55294) {
+                                if (feature.properties.b19013001 + feature.properties.b19013_moe <= 52366) {
                                     $(this).addClass('good');
                                 }
                             }
@@ -803,20 +803,20 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".mhv").each(function(index) {
-                            var scale = [['good', 0], ['null', 348900]];//, ['bad', 247800]];
+                            var scale = [['good', 0], ['null', 286100]];//, ['bad', 247800]];
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
                                 $(this).text("$"+commafy(feature.properties.b25077001));
-                                if (score <= 348900 && mhv_cv <=12) {
+                                if (score <= 286100 && mhv_cv <=12) {
                                     $(this).addClass('good');
                                 }
-                                if (feature.properties.b25077001 + feature.properties.b25077_moe <= 348900) {
+                                if (feature.properties.b25077001 + feature.properties.b25077_moe <= 286100) {
                                     $(this).addClass('good');
                                 }
                             }
                         });
                         $(".mhv_moe").each(function(index) {
-                            var scale = [['good', 0], ['null', 348900]];//, ['bad', 247800]];
+                            var scale = [['good', 0], ['null', 286100]];//, ['bad', 247800]];
                             var score = parseInt($(this).text()) + parseInt(feature.properties.b25077001);
                             console.log("MHV_MOE Score = " + score);
                             for (var i = 0; i < scale.length; i++) {
