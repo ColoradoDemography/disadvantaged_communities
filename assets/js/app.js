@@ -1,12 +1,3 @@
-//app moving pieces: To Update as Needed
-//------------------
-
-//lgbasic table in postgres dola.bounds.lgbasic - use script: _connectOracle/lgbasic.php (on lajavaas) to create JSON.  use script: CO_FS_Data_PHP/load_lgbasic.php to load into Postgres
-//lg2cnty table in postgres dola.bounds.lg2cnty - use script: _connectOracle/lg2cnty.php (on lajavaas) to create JSON.  use script: CO_FS_Data_PHP/load_lg2cnty.php to load into Postgres
-
-//districts table in dola.bounds - as needed when district boundaries change
-
-
 /*global $*/
 
 
@@ -707,66 +698,42 @@ var graphicScale = L.control.graphicScale().addTo(map);
             var mhi_cv = feature.properties.b19013_moe/1.645/feature.properties.b19013001*100;
             var mhv_cv = feature.properties.b25077_moe/1.645/feature.properties.b25077001*100;
 
-            if (feature.properties.jobs_2008 > 0) {
+            if (feature.properties.jobs_2009 > 0) {
                 var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + tableColumns
-                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= Than $52,366 (80% of State MHI)</td></tr>"
+                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= Than $55,049 (80% of State MHI)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $286,100 (100% of State MHV)</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $313,600 (100% of State MHV)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + feature.properties.unemp + "</td><td>&#62;= 3.9%</td></tr>"
+                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + feature.properties.unemp + "</td><td>&#62;= 4.2%</td></tr>"
                         + "<tr><th>County 10-Year Jobs Change</th><td class='job_change'>" + feature.properties.job_change + "</td><td>&#60;= 0</td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2008</th><td class='jobs_2008'>" + feature.properties.jobs_2008 + "</td><td></td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2017</th><td class='jobs_2017'>" + feature.properties.jobs_2017 + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2009</th><td class='jobs_2009'>" + feature.properties.jobs_2009 + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2018</th><td class='jobs_2018'>" + feature.properties.jobs_2018 + "</td><td></td></tr>"
                         + "</table><br />";
             } else {
                  var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + tableColumns
-                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= $52,366 (80% of State MHI)</td></tr>"
+                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= $55,049 (80% of State MHI)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $286,100 (100% of State MHV)</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $313,600 (100% of State MHV)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td><td>&#62;= 3.9%</td></tr>"
+                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td><td>&#62;= 4.2%</td></tr>"
                         + "<tr><th>County 10-Year Jobs Change</th><td class='job_change'>" + "Contact DOLA Analyst" + "</td><td>&#60;= 0</td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2008</th><td class='jobs_2008'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2017</th><td class='jobs_2017'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2009</th><td class='jobs_2009'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2018</th><td class='jobs_2018'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
                         + "</table><br />";
             }
             
             var geonum2text = feature.properties.geonum.toString();
             bgname = "BG " + geonum2text.substr(12,1) + ", Tract: " + geonum2text.substr(6,6);
 
-            // console.log(content);
-            // var altaddress = "";
-
-            // if (feature.properties.alt_address) {
-            //     altaddress = "<tr><th>Alt Address</th><td>" + feature.properties.alt_address + "</td></tr>";
-            // }
-
-            // var contact = "<br /><table class='table table-striped table-bordered table-condensed'>" + "<tr><th backgroundColor='red'>Mail Address</th><td backgroundColor='red'>" + feature.properties.mail_address + "</td></tr>" + altaddress + "<tr><th>City</th><td>" + feature.properties.mail_city + "</td></tr><tr><th>State</th><td>" + "CO" + "</td></tr><tr><th>Zip</th><td>" + feature.properties.mail_zip + "</td></tr></table><br />";
-
             if (geonum2text.length < 13) {
                 var title = titleGeo + ": " + feature.properties.geoname;
             } else {
                 var title = bgname;
             }
-
-            // var detailed = "<br /><table class='table table-striped table-bordered table-condensed'><tr><th>Year</th><th>County</th><th>Subdistrict</th><th>Assessed Value</th><th>Levy</th></tr>";
-
-            // for (var i = 0; i < limlevy.length; i = i + 1) {
-            //     if (limlevy[i].LG_ID == feature.properties.lgid) {
-            //         if (limlevy[i].ASSESSED_VALUE !== "0") {
-            //             detailed = detailed + "<tr><td>" + limlevy[i].BUDGET_YEAR + "</td><td>" + clookup(limlevy[i].COUNTY) + "</td><td>" + limlevy[i].SUBDIST_NUM + "</td><td>$" + commafy(limlevy[i].ASSESSED_VALUE) + "</td><td>" + limlevy[i].TOTAL_LEVY + "</td></tr>";
-            //         }
-            //     }
-            // }
-
-            // detailed = detailed + "</table><br />"
-
-            // var newlink = "https://dola.colorado.gov/dlg_portal/filings.jsf?id=" + feature.properties.lgid;
-            //content = content.replace(feature.properties.b19013001,"$"+commafy(feature.properties.b19013001))
 
             layer.on({
                 click: function(e) {
@@ -779,14 +746,14 @@ var graphicScale = L.control.graphicScale().addTo(map);
                     this.bringToBack(); //to deal with overlapping features.  click again and obscured feature is now on top
                     $(function() {
                         $(".mhi").each(function(index) {
-                            var scale = [['good', 0], ['null', 52366]];
+                            var scale = [['good', 0], ['null', 55049]];
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
                                 $(this).text("$"+commafy(feature.properties.b19013001));                                
-                                if (score <= 52366 && mhi_cv <= 12) {
+                                if (score <= 55049 && mhi_cv <= 12) {
                                     $(this).addClass('good');
                                 }
-                                if (feature.properties.b19013001 + feature.properties.b19013_moe <= 52366) {
+                                if (feature.properties.b19013001 + feature.properties.b19013_moe <= 55049) {
                                     $(this).addClass('good');
                                 }
                             }
@@ -803,20 +770,20 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".mhv").each(function(index) {
-                            var scale = [['good', 0], ['null', 286100]];//, ['bad', 247800]];
+                            var scale = [['good', 0], ['null', 313600]];//, ['bad', 247800]];
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
                                 $(this).text("$"+commafy(feature.properties.b25077001));
-                                if (score <= 286100 && mhv_cv <=12) {
+                                if (score <= 313600 && mhv_cv <=12) {
                                     $(this).addClass('good');
                                 }
-                                if (feature.properties.b25077001 + feature.properties.b25077_moe <= 286100) {
+                                if (feature.properties.b25077001 + feature.properties.b25077_moe <= 313600) {
                                     $(this).addClass('good');
                                 }
                             }
                         });
                         $(".mhv_moe").each(function(index) {
-                            var scale = [['good', 0], ['null', 286100]];//, ['bad', 247800]];
+                            var scale = [['good', 0], ['null', 313600]];//, ['bad', 247800]];
                             var score = parseInt($(this).text()) + parseInt(feature.properties.b25077001);
                             console.log("MHV_MOE Score = " + score);
                             for (var i = 0; i < scale.length; i++) {
@@ -835,7 +802,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                 // }
                             }
                         });
-                        $(".jobs_2008").each(function(index) {
+                        $(".jobs_2009").each(function(index) {
                             // var scale = [['bad', -50000], ['neutral', 0], ['good', 225000]];
                             // var score = $(this).text();
                             // console.log(score);
@@ -845,14 +812,14 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //     }
                             // }
                             //if (filter != 'place') {
-                                var jobs_2008_text = commafy(feature.properties.jobs_2008.toFixed(0));
-                                $(this).text(jobs_2008_text);
-                                if (feature.properties.jobs_2008 == 0) {
+                                var jobs_2009_text = commafy(feature.properties.jobs_2009.toFixed(0));
+                                $(this).text(jobs_2009_text);
+                                if (feature.properties.jobs_2009 == 0) {
                                     $(this).text("Contact DOLA Analyst");
                                 }
                             //}
                         });
-                        $(".jobs_2017").each(function(index) {
+                        $(".jobs_2018").each(function(index) {
                             // var scale = [['bad', 50000], ['neutral', 100000], ['good', 225000]];
                             // var score = $(this).text();
                             // console.log(score);
@@ -862,9 +829,9 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //     }
                             // }
                             //if (filter != 'place') {
-                                var jobs_2017_text = commafy(feature.properties.jobs_2017.toFixed(0));
-                                $(this).text(jobs_2017_text);
-                                if (feature.properties.jobs_2017 == 0) {
+                                var jobs_2018_text = commafy(feature.properties.jobs_2018.toFixed(0));
+                                $(this).text(jobs_2018_text);
+                                if (feature.properties.jobs_2018 == 0) {
                                     $(this).text("Contact DOLA Analyst");
                                 }
                             //}
@@ -878,7 +845,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                     if (score <= scale[i][1]) {
                                         $(this).addClass('good');
                                     }
-                                    if (feature.properties.jobs_2017 == 0) {
+                                    if (feature.properties.jobs_2018 == 0) {
                                         $(this).text("Contact DOLA Analyst");
                                     }
                                 }
@@ -886,14 +853,14 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         });
                         $(".unemp").each(function(index) {
                             //if (filter != 'place') {
-                                var scale = [['null', 3.9], ['good', 8]];
+                                var scale = [['null', 4.2], ['good', 8]];
                                 var score = $(this).text();
                                 for (var i = 0; i < scale.length; i++) {
                                     $(this).text(feature.properties.unemp.toFixed(2)+"%");
-                                    if (score >= 3.9) {
+                                    if (score >= 4.2) {
                                         $(this).addClass('good');
                                     }
-                                    if (feature.properties.jobs_2017 == 0) {
+                                    if (feature.properties.jobs_2018 == 0) {
                                         $(this).text("Contact DOLA Analyst");
                                     }
                                 }
