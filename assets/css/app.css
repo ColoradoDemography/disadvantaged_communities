@@ -120,7 +120,7 @@ input[type="radio"], input[type="checkbox"] {
 }
 @media (max-width: 767px){
   .navbar .navbar-brand {
-    font-size: 14px;
+    font-size: 12px;
   }
   #sidebar {
     display: none;
@@ -133,7 +133,6 @@ input[type="radio"], input[type="checkbox"] {
   }
   .dropdown-menu a i{
     color: #FFFFFF;
-    display: none;
   }
 }
 /* Print Handling */
