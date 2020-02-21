@@ -133,6 +133,7 @@ input[type="radio"], input[type="checkbox"] {
   }
   .dropdown-menu a i{
     color: #FFFFFF;
+    display: none;
   }
 }
 /* Print Handling */
