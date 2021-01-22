@@ -18,7 +18,7 @@ $.getJSON("https://storage.googleapis.com/co-publicdata/geopts.json", function(g
         districtsbb.push(geopts[i].bbox);
     }
 
-    $.getJSON("https://dola.colorado.gov/gis-tmp/limlevy.json", function(json) {
+    $.getJSON("https://storage.googleapis.com/co-publicdata/limlevy.json", function(json) {
         limlevy = json;
         init();
 
@@ -328,14 +328,21 @@ function init() {
     L.mapbox.accessToken = 'pk.eyJ1Ijoic3RhdGVjb2RlbW9nIiwiYSI6Ikp0Sk1tSmsifQ.hl44-VjKTJNEP5pgDFcFPg';
 
     /* Basemap Layers */
-    var mbstyle = L.mapbox.tileLayer('statecodemog.d47df6dd', {
-        'zIndex': 1
+    var mbstyle = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+        tileSize: 512,
+        maxZoom: 18,
+        zoomOffset: -1,
+        id: 'mapbox/outdoors-v11',
+        accessToken: 'pk.eyJ1Ijoic3RhdGVjb2RlbW9nIiwiYSI6Ikp0Sk1tSmsifQ.hl44-VjKTJNEP5pgDFcFPg'
     });
-    var mbsat = L.mapbox.tileLayer('statecodemog.km7i3g01');
+    var mbsat = L.tileLayer('https://api.mapbox.com/styles/v1/statecodemog/ciq0yl9wf000ebpndverm5ler/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RhdGVjb2RlbW9nIiwiYSI6Ikp0Sk1tSmsifQ.hl44-VjKTJNEP5pgDFcFPg', {
+        attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>'
+    });
 
 
 /* Basemap Layers */
-var mapquestOSM = L.tileLayer("https://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
+/*var mapquestOSM = L.tileLayer("https://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
   maxZoom: 19,
   subdomains: ["otile1-s", "otile2-s", "otile3-s", "otile4-s"],
   attribution: 'Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="https://developer.mapquest.com/content/osm/mq_logo.png">. Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA.'
@@ -352,7 +359,7 @@ var mapquestHYB = L.layerGroup([L.tileLayer("https://{s}.mqcdn.com/tiles/1.0.0/s
   maxZoom: 19,
   subdomains: ["otile1-s", "otile2-s", "otile3-s", "otile4-s"],
   attribution: 'Labels courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="https://developer.mapquest.com/content/osm/mq_logo.png">. Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA. Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency'
-})]);
+})]);*/
 
     var Esri_WorldStreetMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
@@ -454,8 +461,8 @@ var graphicScale = L.control.graphicScale().addTo(map);
 
 
     var baseLayers = {
-        "Mapbox: Satellite": mbsat,
-        "Mapbox: Contrast Base": mbstyle,
+        "Mapbox: Contrast": mbsat,
+        "Mapbox: Emerald": mbstyle,
         //"Mapquest: Streets": mapquestOSM,
         //"Mapquest: Imagery": mapquestOAM,
         //"Mapquest: Hybrid": mapquestHYB,
