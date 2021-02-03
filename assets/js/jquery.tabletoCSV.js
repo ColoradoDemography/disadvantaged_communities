@@ -1,5 +1,6 @@
 jQuery.fn.tableToCSV = function(ftitle) {
     
+   
     var clean_text = function(text){
         text = text.replace(/"/g, '""');
         return '"'+text+'"';

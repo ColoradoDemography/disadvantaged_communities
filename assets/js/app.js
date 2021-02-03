@@ -744,6 +744,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
 
             layer.on({
                 click: function(e) {
+                    console.log(title);
                     $("#feature-title").html(title);
                     $("#feature-info").html(content);
                     //$("#contact").html(contact);
@@ -874,10 +875,17 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //}
                         });
                     });
-                    console.log(title);
-                    $("#export").click(function(){
+                    
+                    $("#export").off().click(function(){
                         $("#feature-info").tableToCSV(title);
-                    })
+                    });
+                    /*$("#closetable").click(function(){
+                        $("#feature-info").html("");
+                    })*/
+                    //$('#featureModal').on('hidden.bs.modal', function(e)
+    { 
+        $(this).find('form').trigger('reset');
+    };
                 },
                 mouseover: highlightFeature,
                 mouseout: mouseout
