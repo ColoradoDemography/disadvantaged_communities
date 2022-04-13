@@ -705,7 +705,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
             var mhi_cv = feature.properties.b19013_moe/1.645/feature.properties.b19013001*100;
             var mhv_cv = feature.properties.b25077_moe/1.645/feature.properties.b25077001*100;
 
-            if (feature.properties.jobs_2010 > 0) {
+            if (feature.properties.jobs_2011 > 0) {
                 var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + tableColumns
                         + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= Than $60,185 (80% of State MHI)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe + "</td><td></td></tr>"
@@ -715,7 +715,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
                         + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + feature.properties.unemp + "</td><td>&#62;= 7.1%</td></tr>"
                         + "<tr><th>County 10-Year Jobs Change</th><td class='job_change'>" + feature.properties.job_change + "</td><td>&#60;= 0</td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2010</th><td class='jobs_2010'>" + feature.properties.jobs_2010 + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2011</th><td class='jobs_2011'>" + feature.properties.jobs_2011 + "</td><td></td></tr>"
                         + "<tr><th style='text-indent:10px'>County Jobs 2020</th><td class='jobs_2020'>" + feature.properties.jobs_2020 + "</td><td></td></tr>"
                         + "</table><br />";
             } else {
@@ -728,7 +728,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
                         + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td><td>&#62;= 7.1%</td></tr>"
                         + "<tr><th>County 10-Year Jobs Change</th><td class='job_change'>" + "Contact DOLA Analyst" + "</td><td>&#60;= 0</td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2010</th><td class='jobs_2010'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2011</th><td class='jobs_2011'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
                         + "<tr><th style='text-indent:10px'>County Jobs 2020</th><td class='jobs_2020'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
                         + "</table><br />";
             }
@@ -811,7 +811,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                 // }
                             }
                         });
-                        $(".jobs_2010").each(function(index) {
+                        $(".jobs_2011").each(function(index) {
                             // var scale = [['bad', -50000], ['neutral', 0], ['good', 225000]];
                             // var score = $(this).text();
                             // console.log(score);
@@ -821,9 +821,9 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //     }
                             // }
                             //if (filter != 'place') {
-                                var jobs_2010_text = commafy(feature.properties.jobs_2010.toFixed(0));
-                                $(this).text(jobs_2010_text);
-                                if (feature.properties.jobs_2010 == 0) {
+                                var jobs_2011_text = commafy(feature.properties.jobs_2011.toFixed(0));
+                                $(this).text(jobs_2011_text);
+                                if (feature.properties.jobs_2011 == 0) {
                                     $(this).text("Contact DOLA Analyst");
                                 }
                             //}
