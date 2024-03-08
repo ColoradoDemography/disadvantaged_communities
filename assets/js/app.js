@@ -630,10 +630,10 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
                                 $(this).text("$"+commafy(feature.properties.b19013001));                                
-                                if (score <= 70078 && mhi_cv <= 18) { //cv may need change
+                                if (score > 0 && score <= 70078 && mhi_cv <= 18) { //cv may need change
                                     $(this).addClass('good');
                                 }
-                                if (feature.properties.b19013001 + feature.properties.b19013_moe <= 70078) {
+                                if (feature.properties.b19013001 > 0 && feature.properties.b19013001 + feature.properties.b19013_moe <= 70078) {
                                     $(this).addClass('good');
                                 }
                             }
@@ -654,10 +654,10 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
                                 $(this).text("$"+commafy(feature.properties.b25077001));
-                                if (score <= 465900 && mhv_cv <=18) { //cv may need change
+                                if (score > 0 &&score <= 465900 && mhv_cv <=18) { //cv may need change
                                     $(this).addClass('good');
                                 }
-                                if (feature.properties.b25077001 + feature.properties.b25077_moe <= 465900) {
+                                if (feature.properties.b25077001 > 0 && feature.properties.b25077001 + feature.properties.b25077_moe <= 465900) {
                                     $(this).addClass('good');
                                 }
                             }
