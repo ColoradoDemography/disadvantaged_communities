@@ -576,31 +576,31 @@ var graphicScale = L.control.graphicScale().addTo(map);
             var mhi_cv = feature.properties.b19013_moe/1.645/feature.properties.b19013001*100;
             var mhv_cv = feature.properties.b25077_moe/1.645/feature.properties.b25077001*100;
 
-            if (feature.properties.jobs_2013 > 0) {
+            if (feature.properties.jobs_2014 > 0) {
                 var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + tableColumns
-                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= Than $70,078 (80% of State MHI)</td></tr>"
+                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= Than $73,976 (80% of State MHI)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $465,900 (100% of State MHV)</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $502,200 (100% of State MHV)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + feature.properties.unemp + "</td><td>&#62;= 5.38%</td></tr>"
+                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + feature.properties.unemp + "</td><td>&#62;= 4.47%</td></tr>"
                         + "<tr><th>County 10-Year Jobs Change</th><td class='job_change'>" + feature.properties.job_change + "</td><td>&#60;= 0</td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2013</th><td class='jobs_2013'>" + feature.properties.jobs_2013 + "</td><td></td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2022</th><td class='jobs_2022'>" + feature.properties.jobs_2022 + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2014</th><td class='jobs_2014'>" + feature.properties.jobs_2014 + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2023</th><td class='jobs_2023'>" + feature.properties.jobs_2023 + "</td><td></td></tr>"
                         + "</table><br />";
             } else {
                  var content = "<br /><table class='table table-striped table-bordered table-condensed'>" + tableColumns
-                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= $70,078 (80% of State MHI)</td></tr>"
+                        + "<tr><th>MHI</th><td class='mhi'>" + feature.properties.b19013001 + "</td><td>&#60;= $73,976 (80% of State MHI)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHI_MOE</th><td class='mhi_moe'>" + feature.properties.b19013_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHI_CV</th><td class='cv'>" + mhi_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $465,900 (100% of State MHV)</td></tr>"
+                        + "<tr><th>MHV</th><td class='mhv'>" + feature.properties.b25077001 + "</td><td>&#60;= $502,200 (100% of State MHV)</td></tr>"
                         + "<tr><th style='text-indent:10px'>MHV_MOE</th><td class='mhv_moe'>" + feature.properties.b25077_moe + "</td><td></td></tr>"
                         + "<tr style='border-bottom:3px solid black'><th style='text-indent:10px'>MHV_CV</th><td class='cv'>" + mhv_cv.toFixed(2) + "</td><td></td></tr>"
-                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td><td>&#62;= 5.38%</td></tr>"
+                        + "<tr><th>County 24-Month Unemployment</th><td class='unemp'>" + "Contact DOLA Analyst" + "</td><td>&#62;= 4.47%</td></tr>"
                         + "<tr><th>County 10-Year Jobs Change</th><td class='job_change'>" + "Contact DOLA Analyst" + "</td><td>&#60;= 0</td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2013</th><td class='jobs_2013'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
-                        + "<tr><th style='text-indent:10px'>County Jobs 2022</th><td class='jobs_2022'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2014</th><td class='jobs_2013'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
+                        + "<tr><th style='text-indent:10px'>County Jobs 2023</th><td class='jobs_2022'>" + "Contact DOLA Analyst" + "</td><td></td></tr>"
                         + "</table><br />";
             }
             
@@ -626,20 +626,20 @@ var graphicScale = L.control.graphicScale().addTo(map);
                     //changes here
                     $(function() {
                         $(".mhi").each(function(index) {
-                            var scale = [['good', 0], ['null', 70078]]; //replace this and same values with MHI qualifier
+                            var scale = [['good', 0], ['null', 73976]]; //replace this and same values with MHI qualifier
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
                                 $(this).text("$"+commafy(feature.properties.b19013001));                                
-                                if (score > 0 && score <= 70078 && mhi_cv <= 18) { //cv may need change
+                                if (score > 0 && score <= 73976 && mhi_cv <= 18) { //cv may need change
                                     $(this).addClass('good');
                                 }
-                                if (feature.properties.b19013001 > 0 && feature.properties.b19013001 + feature.properties.b19013_moe <= 70078) {
+                                if (feature.properties.b19013001 > 0 && feature.properties.b19013001 + feature.properties.b19013_moe <= 73976) {
                                     $(this).addClass('good');
                                 }
                             }
                         });
                         $(".mhi_moe").each(function(index) {
-                            var scale = [['good', 0], ['null', 70078]];//, ['bad', 38802.6]];
+                            var scale = [['good', 0], ['null', 73976]];//, ['bad', 38802.6]];
                             var score = parseInt($(this).text()) + parseInt(feature.properties.b19013001); //$(this).text() + mhi?
                             console.log("MHI_MOE Score = " + score);
                             for (var i = 0; i < scale.length; i++) {
@@ -650,20 +650,20 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             }
                         });
                         $(".mhv").each(function(index) {
-                            var scale = [['good', 0], ['null', 465900]]; //replace this and same values with MHV qualifier
+                            var scale = [['good', 0], ['null', 502200]]; //replace this and same values with MHV qualifier
                             var score = $(this).text();
                             for (var i = 0; i < scale.length; i++) {
                                 $(this).text("$"+commafy(feature.properties.b25077001));
-                                if (score > 0 &&score <= 465900 && mhv_cv <=18) { //cv may need change
+                                if (score > 0 &&score <= 502200 && mhv_cv <=18) { //cv may need change
                                     $(this).addClass('good');
                                 }
-                                if (feature.properties.b25077001 > 0 && feature.properties.b25077001 + feature.properties.b25077_moe <= 465900) {
+                                if (feature.properties.b25077001 > 0 && feature.properties.b25077001 + feature.properties.b25077_moe <= 502200) {
                                     $(this).addClass('good');
                                 }
                             }
                         });
                         $(".mhv_moe").each(function(index) {
-                            var scale = [['good', 0], ['null', 465900]];//, ['bad', 247800]];
+                            var scale = [['good', 0], ['null', 502200]];//, ['bad', 247800]];
                             var score = parseInt($(this).text()) + parseInt(feature.properties.b25077001);
                             console.log("MHV_MOE Score = " + score);
                             for (var i = 0; i < scale.length; i++) {
@@ -682,7 +682,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                 // }
                             }
                         });
-                        $(".jobs_2013").each(function(index) {
+                        $(".jobs_2014").each(function(index) {
                             // var scale = [['bad', -50000], ['neutral', 0], ['good', 225000]];
                             // var score = $(this).text();
                             // console.log(score);
@@ -692,14 +692,14 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //     }
                             // }
                             //if (filter != 'place') {
-                                var jobs_2013_text = commafy(feature.properties.jobs_2013.toFixed(0));
-                                $(this).text(jobs_2013_text);
-                                if (feature.properties.jobs_2013 == 0) {
+                                var jobs_2014_text = commafy(feature.properties.jobs_2014.toFixed(0));
+                                $(this).text(jobs_2014_text);
+                                if (feature.properties.jobs_2014 == 0) {
                                     $(this).text("Contact DOLA Analyst");
                                 }
                             //}
                         });
-                        $(".jobs_2022").each(function(index) {
+                        $(".jobs_2023").each(function(index) {
                             // var scale = [['bad', 50000], ['neutral', 100000], ['good', 225000]];
                             // var score = $(this).text();
                             // console.log(score);
@@ -709,9 +709,9 @@ var graphicScale = L.control.graphicScale().addTo(map);
                             //     }
                             // }
                             //if (filter != 'place') {
-                                var jobs_2022_text = commafy(feature.properties.jobs_2022.toFixed(0));
-                                $(this).text(jobs_2022_text);
-                                if (feature.properties.jobs_2022 == 0) {
+                                var jobs_2023_text = commafy(feature.properties.jobs_2023.toFixed(0));
+                                $(this).text(jobs_2023_text);
+                                if (feature.properties.jobs_2023 == 0) {
                                     $(this).text("Contact DOLA Analyst");
                                 }
                             //}
@@ -725,7 +725,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                     if (score <= scale[i][1]) {
                                         $(this).addClass('good');
                                     }
-                                    if (feature.properties.jobs_2022 == 0) {
+                                    if (feature.properties.jobs_2023 == 0) {
                                         $(this).text("Contact DOLA Analyst");
                                     }
                                 }
@@ -733,14 +733,14 @@ var graphicScale = L.control.graphicScale().addTo(map);
                         });
                         $(".unemp").each(function(index) {
                             //if (filter != 'place') {
-                                var scale = [['null', 5.38], ['good', 8]]; //update unemployment number
+                                var scale = [['null', 4.47], ['good', 8]]; //update unemployment number
                                 var score = $(this).text();
                                 for (var i = 0; i < scale.length; i++) {
                                     $(this).text(feature.properties.unemp.toFixed(2)+"%");
-                                    if (score >= 5.38) {
+                                    if (score >= 4.47) {
                                         $(this).addClass('good');
                                     }
-                                    if (feature.properties.jobs_2022 == 0) {
+                                    if (feature.properties.jobs_2023 == 0) {
                                         $(this).text("Contact DOLA Analyst");
                                     }
                                 }
