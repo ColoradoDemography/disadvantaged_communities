@@ -552,7 +552,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
             }).appendTo(popup);
         } else {
             hed = $("<div></div>", {
-                text: titleGeo + " " + fp.geonum.toString().substr(12,1) + ", Tract: " + fp.geonum.toString().substr(6,6),
+                text: titleGeo + " " + fp.geoname + ", Tract: " + fp.TRACTCE20,
                 css: {
                     fontSize: "16px",
                     marginBottom: "3px"
