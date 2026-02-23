@@ -740,7 +740,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                     if (score >= 4.27) {
                                         $(this).addClass('good');
                                     }
-                                    if (feature.properties.jobs_2023 == 0) {
+                                    if (feature.properties.jobs_2024 == 0) {
                                         $(this).text("Contact DOLA Analyst");
                                     }
                                 }
