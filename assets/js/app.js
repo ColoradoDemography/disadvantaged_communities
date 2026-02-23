@@ -682,7 +682,7 @@ var graphicScale = L.control.graphicScale().addTo(map);
                                 // }
                             }
                         });
-                        $(".jobs_2014").each(function(index) {
+                        $(".jobs_2015").each(function(index) {
                             // var scale = [['bad', -50000], ['neutral', 0], ['good', 225000]];
                             // var score = $(this).text();
                             // console.log(score);
